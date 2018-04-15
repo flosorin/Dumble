@@ -46,7 +46,7 @@ enum Suit : Int {
     }
 }
 
-class Card : NSObject, NSCopying {
+class Card {
     
     var rank : Rank
     var suit : Suit
@@ -67,9 +67,9 @@ class Card : NSObject, NSCopying {
         }
     }
     
-    func copy(with zone: NSZone? = nil) -> Any {
-        let copy = Card(rank: rank, suit: suit)
-        return copy
+    func clone() -> Card {
+        let clone = Card(rank: rank, suit: suit)
+        return clone
     }
 }
 
@@ -95,9 +95,9 @@ class Deck {
         
         for deckIndex in (1...cards.count).reversed() {
             randomIndex = Int(arc4random_uniform(UInt32(deckIndex)))
-            cardTmp = (cards[deckIndex].copy() as Card?)!
-            cards[deckIndex] = (cards[randomIndex].copy() as Card?)!
-            cards[randomIndex] = (cardTmp.copy() as Card?)!
+            cardTmp = cards[deckIndex].clone()
+            cards[deckIndex] = cards[randomIndex].clone()
+            cards[randomIndex] = cardTmp.clone()
         }
     }
 }
