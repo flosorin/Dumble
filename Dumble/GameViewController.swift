@@ -10,11 +10,10 @@ import UIKit
 import SpriteKit
 import GameplayKit
 
-class GameViewController: UIViewController
-{
+class GameViewController: UIViewController {
 
-    override func viewDidLoad()
-    {
+    override func viewDidLoad() {
+        
         super.viewDidLoad()
         
         if let view = self.view as! SKView? {

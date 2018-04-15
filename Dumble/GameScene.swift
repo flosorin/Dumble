@@ -9,8 +9,7 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene, SKPhysicsContactDelegate
-{
+class GameScene: SKScene, SKPhysicsContactDelegate {
 
     let testCardTexture = SKTexture(imageNamed: "deuce_of_clubs")
     let testCardTextureAlternate = SKTexture(imageNamed: "back")
@@ -22,16 +21,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var handRight : SKSpriteNode!
     
     // Player cards
-    var card1 : SKSpriteNode!
-    var card2 : SKSpriteNode!
-    var card3 : SKSpriteNode!
-    var card4 : SKSpriteNode!
-    var card5 : SKSpriteNode!
+    var playerCard1 : SKSpriteNode!
+    var playerCard2 : SKSpriteNode!
+    var playerCard3 : SKSpriteNode!
+    var playerCard4 : SKSpriteNode!
+    var playerCard5 : SKSpriteNode!
     
     var cardsList : [String : SKSpriteNode] = [:]
     
-    override func didMove(to view: SKView)
-    {
+    override func didMove(to view: SKView) {
+        
         handLeft = createHand(angle : CGFloat(Double.pi / 2), position : CGPoint(x: frame.width, y: frame.height * 5 / 8))
         handTop = createHand(angle : CGFloat(Double.pi), position : CGPoint(x: frame.width / 2, y: frame.height))
         handRight = createHand(angle : CGFloat(-Double.pi / 2), position : CGPoint(x: 0, y: frame.height * 5 / 8))
@@ -39,43 +38,43 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         addChild(handTop)
         addChild(handRight)
         
-        card1 = createCard(cardTexture: testCardTexture, cardPosition: CGPoint(x: 0, y: 0))
-        card1.position = CGPoint(x: card1.size.width, y: 2 * card1.size.height)
-        card1.name = "card1"
-        addChild(card1)
-        card2 = createCard(cardTexture: testCardTexture, cardPosition: CGPoint(x: 2.25 * card1.position.x, y: card1.position.y))
-        card2.name = "card2"
-        addChild(card2)
-        card3 = createCard(cardTexture: testCardTexture, cardPosition: CGPoint(x: card2.position.x + 1.25 * card1.position.x, y: card1.position.y))
-        card3.name = "card3"
-        addChild(card3)
-        card4 = createCard(cardTexture: testCardTexture, cardPosition: CGPoint(x: card3.position.x + 1.25 * card1.position.x, y: card1.position.y))
-        card4.name = "card4"
-        addChild(card4)
-        card5 = createCard(cardTexture: testCardTexture, cardPosition: CGPoint(x: card4.position.x + 1.25 * card1.position.x, y: card1.position.y))
-        card5.name = "card5"
-        addChild(card5)
-        cardsList = ["card1" : card1, "card2" : card2, "card3" : card3, "card4" : card4, "card5" : card5]
+        playerCard1 = createCard(cardTexture: testCardTexture, cardPosition: CGPoint(x: 0, y: 0))
+        playerCard1.position = CGPoint(x: playerCard1.size.width, y: 2 * playerCard1.size.height)
+        playerCard1.name = "card1"
+        addChild(playerCard1)
+        playerCard2 = createCard(cardTexture: testCardTexture, cardPosition: CGPoint(x: 2.25 * playerCard1.position.x, y: playerCard1.position.y))
+        playerCard2.name = "card2"
+        addChild(playerCard2)
+        playerCard3 = createCard(cardTexture: testCardTexture, cardPosition: CGPoint(x: playerCard2.position.x + 1.25 * playerCard1.position.x, y: playerCard1.position.y))
+        playerCard3.name = "card3"
+        addChild(playerCard3)
+        playerCard4 = createCard(cardTexture: testCardTexture, cardPosition: CGPoint(x: playerCard3.position.x + 1.25 * playerCard1.position.x, y: playerCard1.position.y))
+        playerCard4.name = "card4"
+        addChild(playerCard4)
+        playerCard5 = createCard(cardTexture: testCardTexture, cardPosition: CGPoint(x: playerCard4.position.x + 1.25 * playerCard1.position.x, y: playerCard1.position.y))
+        playerCard5.name = "card5"
+        addChild(playerCard5)
+        cardsList = ["card1" : playerCard1, "card2" : playerCard2, "card3" : playerCard3, "card4" : playerCard4, "card5" : playerCard5]
         
         let deck = SKSpriteNode(texture: SKTexture(imageNamed: "Deck"))
-        let newHeight = card1.size.height
+        let newHeight = playerCard1.size.height
         let newWidth = deck.size.width * (newHeight / deck.size.height)
         deck.size = CGSize(width: newWidth, height: newHeight)
         deck.position = CGPoint(x: frame.width / 2, y: frame.height * 5 / 8)
         addChild(deck)
     }
 
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
-    {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
         for touch in touches {
             let location = touch.location(in: self)
             let node : SKNode = self.atPoint(location)
             if let nodeName = node.name {
                 if let card = cardsList[nodeName] {
-                    if (card.position.y == 2 * card1.size.height) {
-                        card.position.y += card1.size.height / 2
+                    if (card.position.y == 2 * playerCard1.size.height) {
+                        card.position.y += playerCard1.size.height / 2
                     } else {
-                        card.position.y -= card1.size.height / 2
+                        card.position.y -= playerCard1.size.height / 2
                     }
                 }
             } else {
@@ -89,15 +88,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     }
     
     // Called before each frame is rendered
-    override func update(_ currentTime: TimeInterval)
-    {
+    override func update(_ currentTime: TimeInterval) {
+        
         handLeft.texture = SKTexture(imageNamed: "Hand_\(handCounter)")
         handTop.texture = SKTexture(imageNamed: "Hand_\(handCounter)")
         handRight.texture = SKTexture(imageNamed: "Hand_\(handCounter)")
     }
     
-    func createCard(cardTexture : SKTexture, cardPosition : CGPoint) -> SKSpriteNode
-    {    
+    func createCard(cardTexture : SKTexture, cardPosition : CGPoint) -> SKSpriteNode {
+        
         // Create the base of a card
         let card = SKSpriteNode(texture: cardTexture)
         card.zPosition = 10
@@ -109,8 +108,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         return card
     }
     
-    func createHand(angle : CGFloat, position : CGPoint) -> SKSpriteNode
-    {
+    func createHand(angle : CGFloat, position : CGPoint) -> SKSpriteNode {
+        
         let hand = SKSpriteNode(texture: SKTexture(imageNamed: "Hand_5"))
         let newWidth = frame.width / 3
         let newHeight = hand.size.height * (newWidth / hand.size.width)
