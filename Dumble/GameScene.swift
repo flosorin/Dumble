@@ -10,9 +10,12 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
-
-    let testCardTexture = SKTexture(imageNamed: "deuce_of_clubs")
-    let testCardTextureAlternate = SKTexture(imageNamed: "back")
+    
+    // Players
+    var player = PlayerUser()
+    var playerIA1 = PlayerIA()
+    var playerIA2 = PlayerIA()
+    var playerIA3 = PlayerIA()
     
     // IA's hands
     var handCounter = 5
@@ -21,82 +24,63 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var handRight : SKSpriteNode!
     
     // Player cards
-    var playerCard1 : SKSpriteNode!
-    var playerCard2 : SKSpriteNode!
-    var playerCard3 : SKSpriteNode!
-    var playerCard4 : SKSpriteNode!
-    var playerCard5 : SKSpriteNode!
-    
+    var playerCardsNodes : [SKSpriteNode] = []
     var cardsList : [String : SKSpriteNode] = [:]
+    
+    // Deck
+    var deck = Deck()
+    
+    // Texture for the back of a card
+    let backTexture = SKTexture(imageNamed: "back")
     
     override func didMove(to view: SKView) {
         
-        handLeft = createHand(angle : CGFloat(Double.pi / 2), position : CGPoint(x: frame.width, y: frame.height * 5 / 8))
-        handTop = createHand(angle : CGFloat(Double.pi), position : CGPoint(x: frame.width / 2, y: frame.height))
-        handRight = createHand(angle : CGFloat(-Double.pi / 2), position : CGPoint(x: 0, y: frame.height * 5 / 8))
+        // IA's hands
+        createIAHands()
+        
+        // Player hand display (init with back, modified when the cards are dealt)
+        createPlayerHand()
+        
+        // Deck
+        createDeckNode()
+    }
+    
+    func createIAHands() {
+        handLeft = createHandNode(angle : CGFloat(Double.pi / 2), position : CGPoint(x: frame.width, y: frame.height * 5 / 8))
+        handTop = createHandNode(angle : CGFloat(Double.pi), position : CGPoint(x: frame.width / 2, y: frame.height))
+        handRight = createHandNode(angle : CGFloat(-Double.pi / 2), position : CGPoint(x: 0, y: frame.height * 5 / 8))
         addChild(handLeft)
         addChild(handTop)
         addChild(handRight)
-        
-        playerCard1 = createCard(cardTexture: testCardTexture, cardPosition: CGPoint(x: 0, y: 0))
-        playerCard1.position = CGPoint(x: playerCard1.size.width, y: 2 * playerCard1.size.height)
-        playerCard1.name = "card1"
-        addChild(playerCard1)
-        playerCard2 = createCard(cardTexture: testCardTexture, cardPosition: CGPoint(x: 2.25 * playerCard1.position.x, y: playerCard1.position.y))
-        playerCard2.name = "card2"
-        addChild(playerCard2)
-        playerCard3 = createCard(cardTexture: testCardTexture, cardPosition: CGPoint(x: playerCard2.position.x + 1.25 * playerCard1.position.x, y: playerCard1.position.y))
-        playerCard3.name = "card3"
-        addChild(playerCard3)
-        playerCard4 = createCard(cardTexture: testCardTexture, cardPosition: CGPoint(x: playerCard3.position.x + 1.25 * playerCard1.position.x, y: playerCard1.position.y))
-        playerCard4.name = "card4"
-        addChild(playerCard4)
-        playerCard5 = createCard(cardTexture: testCardTexture, cardPosition: CGPoint(x: playerCard4.position.x + 1.25 * playerCard1.position.x, y: playerCard1.position.y))
-        playerCard5.name = "card5"
-        addChild(playerCard5)
-        cardsList = ["card1" : playerCard1, "card2" : playerCard2, "card3" : playerCard3, "card4" : playerCard4, "card5" : playerCard5]
-        
-        let deck = SKSpriteNode(texture: SKTexture(imageNamed: "Deck"))
-        let newHeight = playerCard1.size.height
-        let newWidth = deck.size.width * (newHeight / deck.size.height)
-        deck.size = CGSize(width: newWidth, height: newHeight)
-        deck.position = CGPoint(x: frame.width / 2, y: frame.height * 5 / 8)
-        addChild(deck)
     }
-
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-        for touch in touches {
-            let location = touch.location(in: self)
-            let node : SKNode = self.atPoint(location)
-            if let nodeName = node.name {
-                if let card = cardsList[nodeName] {
-                    if (card.position.y == 2 * playerCard1.size.height) {
-                        card.position.y += playerCard1.size.height / 2
-                    } else {
-                        card.position.y -= playerCard1.size.height / 2
-                    }
-                }
-            } else {
-                if (handCounter > 1) {
-                    handCounter -= 1
-                } else {
-                    handCounter = 5
-                }
-            }
+    
+    func createHandNode(angle : CGFloat, position : CGPoint) -> SKSpriteNode {
+        let hand = SKSpriteNode(texture: SKTexture(imageNamed: "Hand_5"))
+        let newWidth = frame.width / 3
+        let newHeight = hand.size.height * (newWidth / hand.size.width)
+        hand.position = position
+        hand.size = CGSize(width: newWidth, height: newHeight)
+        hand.zRotation = angle
+        return hand
+    }
+    
+    func createPlayerHand() {
+        // Create the first card
+        playerCardsNodes.append(createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: 0, y: 0)))
+        playerCardsNodes[0].position = CGPoint(x: playerCardsNodes[0].size.width, y: 2 * playerCardsNodes[0].size.height)
+        playerCardsNodes[0].name = "card0"
+        cardsList.updateValue(playerCardsNodes[0], forKey: "card0")
+        addChild(playerCardsNodes[0])
+        // Create the others according to the first card position
+        for index in 1...4 {
+            playerCardsNodes.append(createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: playerCardsNodes[index - 1].position.x + 1.25 * playerCardsNodes[0].position.x, y: playerCardsNodes[0].position.y)))
+            playerCardsNodes[index].name = "card\(index)"
+            cardsList.updateValue(playerCardsNodes[index], forKey: "card\(index)")
+            addChild(playerCardsNodes[index])
         }
     }
     
-    // Called before each frame is rendered
-    override func update(_ currentTime: TimeInterval) {
-        
-        handLeft.texture = SKTexture(imageNamed: "Hand_\(handCounter)")
-        handTop.texture = SKTexture(imageNamed: "Hand_\(handCounter)")
-        handRight.texture = SKTexture(imageNamed: "Hand_\(handCounter)")
-    }
-    
-    func createCard(cardTexture : SKTexture, cardPosition : CGPoint) -> SKSpriteNode {
-        
+    func createCardNode(cardTexture : SKTexture, cardPosition : CGPoint) -> SKSpriteNode {
         // Create the base of a card
         let card = SKSpriteNode(texture: cardTexture)
         card.zPosition = 10
@@ -108,15 +92,106 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return card
     }
     
-    func createHand(angle : CGFloat, position : CGPoint) -> SKSpriteNode {
-        
-        let hand = SKSpriteNode(texture: SKTexture(imageNamed: "Hand_5"))
-        let newWidth = frame.width / 3
-        let newHeight = hand.size.height * (newWidth / hand.size.width)
-        hand.position = position
-        hand.size = CGSize(width: newWidth, height: newHeight)
-        hand.zRotation = angle
-        return hand
+    func createDeckNode() {
+        let deckNode = SKSpriteNode(texture: SKTexture(imageNamed: "Deck"))
+        let newHeight = playerCardsNodes[0].size.height // Ensure that the deck cards have the same size as the player cards
+        let newWidth = deckNode.size.width * (newHeight / deckNode.size.height)
+        deckNode.size = CGSize(width: newWidth, height: newHeight)
+        deckNode.position = CGPoint(x: frame.width / 2, y: frame.height * 5 / 8)
+        deckNode.name = "deck"
+        addChild(deckNode)
     }
+
+    // Touch management
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        for touch in touches {
+            let location = touch.location(in: self)
+            let node : SKNode = self.atPoint(location)
+            if let nodeName = node.name {
+                if let cardNode = cardsList[nodeName] {
+                    playerCardsTouchManager(cardNode: cardNode)
+                } else if nodeName == "deck" {
+                    dealCards()
+                }
+            } else {
+                // TO BE REMOVED (debug only)
+                if (handCounter > 1) {
+                    handCounter -= 1
+                } else {
+                    handCounter = 5
+                }
+            }
+        }
+    }
+    
+    func playerCardsTouchManager (cardNode: SKSpriteNode) {
+        let index = playerCardsNodes.index(of: cardNode)!
+        // If the card is in its standard position, check if we can select it
+        if (cardNode.position.y == 2 * playerCardsNodes[0].size.height) {
+            if (player.isCardSelectable(index: index)) {
+                // Make the card goes up to indicate that it is selected
+                cardNode.position.y += playerCardsNodes[0].size.height / 2
+                player.cards[index].isSelected = true
+            }
+        } else {
+            // Always possible to go back to initial position
+            cardNode.position.y -= playerCardsNodes[0].size.height / 2
+            player.cards[index].isSelected = false
+            // Reset player selected flags if there is one or less card(s) selected
+            if (player.cardsSelected() <= 1) {
+                player.resetSelected()
+            }
+        }
+    }
+    
+    
+    // Called before each frame is rendered
+    override func update(_ currentTime: TimeInterval) {
+        
+        handLeft.texture = SKTexture(imageNamed: "Hand_\(handCounter)")
+        handTop.texture = SKTexture(imageNamed: "Hand_\(handCounter)")
+        handRight.texture = SKTexture(imageNamed: "Hand_\(handCounter)")
+        
+        displayPlayerCards()
+    }
+    
+    func displayPlayerCards() {
+        switch player.cards.count {
+        case 5:
+            for index in 0...4 {
+                playerCardsNodes[index].isHidden = false
+                playerCardsNodes[index].texture = player.cards[index].picture
+            }
+        default:
+            for index in 0...4 {
+                playerCardsNodes[index].isHidden = true
+            }
+        }
+    }
+    
+    func dealCards() {
+        
+        deck.melt()
+        player.reset()
+        playerIA1.reset()
+        playerIA2.reset()
+        playerIA3.reset()
+        
+        for _ in 0...4 {
+            player.addCard(card: deck.cards[deck.topCard])
+            deck.topCard -= 1
+            playerIA1.addCard(card: deck.cards[deck.topCard])
+            deck.topCard -= 1
+            playerIA2.addCard(card: deck.cards[deck.topCard])
+            deck.topCard -= 1
+            playerIA3.addCard(card: deck.cards[deck.topCard])
+            deck.topCard -= 1
+        }
+        
+        player.sortCards()
+    }
+
+
 }
 

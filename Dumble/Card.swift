@@ -51,15 +51,16 @@ class Card {
     var rank : Rank
     var suit : Suit
     var picture : SKTexture
+    var isSelected : Bool
     
     init (rank : Rank, suit : Suit) {
         self.rank = rank
         self.suit = suit
         self.picture = SKTexture(imageNamed: rank.name + "_of_" + suit.name)
+        self.isSelected = false
     }
     
     func getDumbleValue() -> Int {
-        
         if (rank.rawValue > 10) {
             return 10
         } else {
@@ -76,11 +77,12 @@ class Card {
 class Deck {
     
     var cards : [Card] = []
+    var topCard = 0
     
+    // Simple init wich create a full deck
     init() {
-        
         cards.append(Card(rank: Rank.joker, suit: Suit.blackJoker))
-        for rankIndex in 0...13 {
+        for rankIndex in 1...13 {
             for suitIndex in 0...3 {
                 cards.append(Card(rank: Rank.init(rawValue: rankIndex)!, suit: Suit.init(rawValue: suitIndex)!))
             }
@@ -88,12 +90,18 @@ class Deck {
         cards.append(Card(rank: Rank.joker, suit: Suit.redJoker))
     }
     
+    // Init with a defined card array
+    init(withCards: [Card]) {
+        cards = withCards
+    }
+    
+    // Melt the whole deck
     func melt() {
-        
         var randomIndex = 0
         var cardTmp : Card
+        topCard = cards.count - 1
         
-        for deckIndex in (1...cards.count).reversed() {
+        for deckIndex in (1...topCard).reversed() {
             randomIndex = Int(arc4random_uniform(UInt32(deckIndex)))
             cardTmp = cards[deckIndex].clone()
             cards[deckIndex] = cards[randomIndex].clone()

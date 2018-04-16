@@ -105,8 +105,8 @@
 		178385051F5837E000D16729 /* Dumble */ = {
 			isa = PBXGroup;
 			children = (
-				178385061F5837E000D16729 /* AppDelegate.swift */,
 				178385081F5837E000D16729 /* GameScene.sks */,
+				178385061F5837E000D16729 /* AppDelegate.swift */,
 				1783850C1F5837E000D16729 /* GameScene.swift */,
 				1783850E1F5837E000D16729 /* GameViewController.swift */,
 				178385101F5837E000D16729 /* Main.storyboard */,
