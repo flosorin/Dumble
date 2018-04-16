@@ -26,6 +26,30 @@ class Player {
         handScore = 0
         dumbleSaid = false
     }
+    
+    func nbCardsSelected() -> Int {
+        var cardsSelected = 0
+        
+        for card in cards {
+            if card.isSelected {
+                cardsSelected += 1
+            }
+        }
+        
+        return cardsSelected
+    }
+    
+    func removeSelectedCards() {
+        var cardsTmp : [Card] = []
+        for card in cards {
+            if !(card.isSelected) {
+                cardsTmp.append(card)
+            }
+        }
+        cards.removeAll()
+        cards.append(contentsOf: cardsTmp)
+        cardsTmp.removeAll()
+    }
 }
 
 class PlayerUser : Player {
@@ -53,7 +77,7 @@ class PlayerUser : Player {
     
     func isCardSelectable(index: Int) -> Bool {
         // If there is no card selected, we can obviously select this one
-        if (cardsSelected() == 0) {
+        if (nbCardsSelected() == 0) {
             return true
         }
         
@@ -81,16 +105,17 @@ class PlayerUser : Player {
         return false
     }
     
-    func cardsSelected() -> Int {
-        var cardsSelected = 0
-        
-        for card in cards {
-            if card.isSelected {
-                cardsSelected += 1
-            }
+    func isSwitchAllowed() -> Bool {
+        // First of all, if there is no card selected, there is nothing to switch
+        if (nbCardsSelected() == 0) {
+            return false
         }
-        
-        return cardsSelected
+        // Then, if we try to switch cards of the same suit, there must be at least three of them
+        if (sameSuitSelected && nbCardsSelected() < 3) {
+            return false
+        }
+        // If we are here, then everything is legit
+        return true
     }
     
     func resetSelected() {

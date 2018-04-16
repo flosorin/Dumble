@@ -25,10 +25,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Player cards
     var playerCardsNodes : [SKSpriteNode] = []
-    var cardsList : [String : SKSpriteNode] = [:]
+    var playerCardsList : [String : SKSpriteNode] = [:]
     
-    // Deck
-    var deck = Deck()
+    // Pile and discard
+    var pile = Deck()
+    var discard : [Card] = []
     
     // Texture for the back of a card
     let backTexture = SKTexture(imageNamed: "back")
@@ -41,14 +42,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Player hand display (init with back, modified when the cards are dealt)
         createPlayerHand()
         
-        // Deck
-        createDeckNode()
+        // Pile
+        createPileNode()
     }
     
     func createIAHands() {
         handLeft = createHandNode(angle : CGFloat(Double.pi / 2), position : CGPoint(x: frame.width, y: frame.height * 5 / 8))
+        handLeft.isHidden = true
         handTop = createHandNode(angle : CGFloat(Double.pi), position : CGPoint(x: frame.width / 2, y: frame.height))
+        handTop.isHidden = true
         handRight = createHandNode(angle : CGFloat(-Double.pi / 2), position : CGPoint(x: 0, y: frame.height * 5 / 8))
+        handRight.isHidden = true
         addChild(handLeft)
         addChild(handTop)
         addChild(handRight)
@@ -56,10 +60,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func createHandNode(angle : CGFloat, position : CGPoint) -> SKSpriteNode {
         let hand = SKSpriteNode(texture: SKTexture(imageNamed: "Hand_5"))
-        let newWidth = frame.width / 3
-        let newHeight = hand.size.height * (newWidth / hand.size.width)
         hand.position = position
-        hand.size = CGSize(width: newWidth, height: newHeight)
+        hand.size = resizeWidth(oldSize: hand.size, newWidth: frame.width / 3)
         hand.zRotation = angle
         return hand
     }
@@ -69,13 +71,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         playerCardsNodes.append(createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: 0, y: 0)))
         playerCardsNodes[0].position = CGPoint(x: playerCardsNodes[0].size.width, y: 2 * playerCardsNodes[0].size.height)
         playerCardsNodes[0].name = "card0"
-        cardsList.updateValue(playerCardsNodes[0], forKey: "card0")
+        playerCardsList.updateValue(playerCardsNodes[0], forKey: "card0")
         addChild(playerCardsNodes[0])
         // Create the others according to the first card position
         for index in 1...4 {
             playerCardsNodes.append(createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: playerCardsNodes[index - 1].position.x + 1.25 * playerCardsNodes[0].position.x, y: playerCardsNodes[0].position.y)))
             playerCardsNodes[index].name = "card\(index)"
-            cardsList.updateValue(playerCardsNodes[index], forKey: "card\(index)")
+            playerCardsList.updateValue(playerCardsNodes[index], forKey: "card\(index)")
             addChild(playerCardsNodes[index])
         }
     }
@@ -86,20 +88,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         card.zPosition = 10
         card.position = cardPosition
         // Resize it keeping aspect ratio
-        let newWidth = frame.width / 7
-        let newHeight = card.size.height * (newWidth / card.size.width)
-        card.size = CGSize(width: newWidth, height: newHeight)
+        card.size = resizeWidth(oldSize: card.size, newWidth: frame.width / 7)
         return card
     }
     
-    func createDeckNode() {
-        let deckNode = SKSpriteNode(texture: SKTexture(imageNamed: "Deck"))
-        let newHeight = playerCardsNodes[0].size.height // Ensure that the deck cards have the same size as the player cards
-        let newWidth = deckNode.size.width * (newHeight / deckNode.size.height)
-        deckNode.size = CGSize(width: newWidth, height: newHeight)
-        deckNode.position = CGPoint(x: frame.width / 2, y: frame.height * 5 / 8)
-        deckNode.name = "deck"
-        addChild(deckNode)
+    func createPileNode() {
+        let pileNode = SKSpriteNode(texture: SKTexture(imageNamed: "pile"))
+        pileNode.size = resizeHeight(oldSize: pileNode.size, newHeight: playerCardsNodes[0].size.height)
+        pileNode.position = CGPoint(x: frame.width / 2, y: frame.height * 5 / 8)
+        pileNode.name = "pile"
+        addChild(pileNode)
     }
 
     // Touch management
@@ -108,19 +106,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for touch in touches {
             let location = touch.location(in: self)
             let node : SKNode = self.atPoint(location)
-            if let nodeName = node.name {
-                if let cardNode = cardsList[nodeName] {
+            if let nodeName = node.name { // Check if the node is a player card
+                if let cardNode = playerCardsList[nodeName] {
                     playerCardsTouchManager(cardNode: cardNode)
-                } else if nodeName == "deck" {
-                    dealCards()
+                } else if nodeName == "pile" { // Check if the node is the pile
+                    pileTouchManager()
                 }
             } else {
-                // TO BE REMOVED (debug only)
-                if (handCounter > 1) {
-                    handCounter -= 1
-                } else {
-                    handCounter = 5
-                }
+                // Still debug, we definitely need a real "deal button"
+                dealCards()
             }
         }
     }
@@ -139,10 +133,82 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             cardNode.position.y -= playerCardsNodes[0].size.height / 2
             player.cards[index].isSelected = false
             // Reset player selected flags if there is one or less card(s) selected
-            if (player.cardsSelected() <= 1) {
+            if (player.nbCardsSelected() <= 1) {
                 player.resetSelected()
             }
         }
+    }
+    
+    func pileTouchManager() {
+        // Check if the interaction is legit
+        if (player.isSwitchAllowed()) {
+            resetPlayerCardsPosition()
+            givePileTopToPlayer() // Call generic method
+            player.resetSelected()
+        }
+    }
+    
+    func resetPlayerCardsPosition() {
+        for cardNode in playerCardsNodes {
+            cardNode.position.y = 2 * playerCardsNodes[0].size.height
+        }
+    }
+    
+    func givePileTopToPlayer() {
+        // The player recover the top card of the pile
+        switchPlayerCards(cardToPick: pile.cards[pile.topCard])
+        // Update the pile top card
+        if pile.topCard > 0 {
+            pile.topCard -= 1
+        } else { // If there is no card left, the discard become the new pile
+            if let cardTmp = discard.last {
+                discard.removeLast()
+                pile.reconstruct(withCards: discard)
+                discard.removeAll()
+                discard.append(cardTmp)
+            }
+        }
+    }
+    
+    func switchPlayerCards(cardToPick: Card) {
+        // The selected cards go to the discard
+        for card in player.cards {
+            if card.isSelected {
+                discard.append(card)
+            }
+        }
+        player.removeSelectedCards()
+        player.addCard(card: cardToPick)
+    }
+    
+    func dealCards() {
+        // Melt the pile
+        pile.melt()
+        
+        // Reset players (remove all cards and reset scores)
+        player.reset()
+        playerIA1.reset()
+        playerIA2.reset()
+        playerIA3.reset()
+        
+        // Deal the cards (all players)
+        for _ in 0...4 {
+            player.addCard(card: pile.cards[pile.topCard])
+            pile.topCard -= 1
+            playerIA1.addCard(card: pile.cards[pile.topCard])
+            pile.topCard -= 1
+            playerIA2.addCard(card: pile.cards[pile.topCard])
+            pile.topCard -= 1
+            playerIA3.addCard(card: pile.cards[pile.topCard])
+            pile.topCard -= 1
+        }
+        // Deal the initial discard card
+        discard.append(pile.cards[pile.topCard])
+        pile.topCard -= 1
+        
+        handLeft.isHidden = false
+        handTop.isHidden = false
+        handRight.isHidden = false
     }
     
     
@@ -158,40 +224,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func displayPlayerCards() {
         switch player.cards.count {
-        case 5:
-            for index in 0...4 {
-                playerCardsNodes[index].isHidden = false
-                playerCardsNodes[index].texture = player.cards[index].picture
-            }
-        default:
+        case 0:
             for index in 0...4 {
                 playerCardsNodes[index].isHidden = true
             }
+        default:
+            player.sortCards()
+            for index in 0...player.cards.count - 1 {
+                playerCardsNodes[index].texture = player.cards[index].picture
+                playerCardsNodes[index].isHidden = false
+            }
+            if player.cards.count < playerCardsNodes.count {
+                for index in player.cards.count...playerCardsNodes.count - 1 {
+                    playerCardsNodes[index].isHidden = true
+                }
+            }
         }
     }
-    
-    func dealCards() {
-        
-        deck.melt()
-        player.reset()
-        playerIA1.reset()
-        playerIA2.reset()
-        playerIA3.reset()
-        
-        for _ in 0...4 {
-            player.addCard(card: deck.cards[deck.topCard])
-            deck.topCard -= 1
-            playerIA1.addCard(card: deck.cards[deck.topCard])
-            deck.topCard -= 1
-            playerIA2.addCard(card: deck.cards[deck.topCard])
-            deck.topCard -= 1
-            playerIA3.addCard(card: deck.cards[deck.topCard])
-            deck.topCard -= 1
-        }
-        
-        player.sortCards()
-    }
-
-
 }
 

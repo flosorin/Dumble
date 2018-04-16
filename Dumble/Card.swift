@@ -90,11 +90,6 @@ class Deck {
         cards.append(Card(rank: Rank.joker, suit: Suit.redJoker))
     }
     
-    // Init with a defined card array
-    init(withCards: [Card]) {
-        cards = withCards
-    }
-    
     // Melt the whole deck
     func melt() {
         var randomIndex = 0
@@ -107,5 +102,12 @@ class Deck {
             cards[deckIndex] = cards[randomIndex].clone()
             cards[randomIndex] = cardTmp.clone()
         }
+    }
+    
+    // Redefine a deck with a card array
+    func reconstruct(withCards: [Card]) {
+        cards.removeAll()
+        cards.append(contentsOf: withCards)
+        melt()
     }
 }

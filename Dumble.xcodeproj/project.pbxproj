@@ -16,6 +16,7 @@
 		178385171F5837E000D16729 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 178385151F5837E000D16729 /* LaunchScreen.storyboard */; };
 		178385221F5837E100D16729 /* DumbleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 178385211F5837E100D16729 /* DumbleTests.swift */; };
 		1783852D1F5837E100D16729 /* DumbleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1783852C1F5837E100D16729 /* DumbleUITests.swift */; };
+		6DA0F5172084CA770085B499 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA0F5162084CA770085B499 /* Utils.swift */; };
 		6DA279A52082BA3B00E751A4 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA279A42082BA3B00E751A4 /* Card.swift */; };
 		6DA279A72082C31800E751A4 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA279A62082C31800E751A4 /* Player.swift */; };
 /* End PBXBuildFile section */
@@ -53,6 +54,7 @@
 		178385281F5837E100D16729 /* DumbleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DumbleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1783852C1F5837E100D16729 /* DumbleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DumbleUITests.swift; sourceTree = "<group>"; };
 		1783852E1F5837E100D16729 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6DA0F5162084CA770085B499 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		6DA279A42082BA3B00E751A4 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		6DA279A62082C31800E751A4 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -115,6 +117,7 @@
 				178385181F5837E000D16729 /* Info.plist */,
 				6DA279A42082BA3B00E751A4 /* Card.swift */,
 				6DA279A62082C31800E751A4 /* Player.swift */,
+				6DA0F5162084CA770085B499 /* Utils.swift */,
 			);
 			path = Dumble;
 			sourceTree = "<group>";
@@ -283,6 +286,7 @@
 				178385071F5837E000D16729 /* AppDelegate.swift in Sources */,
 				6DA279A72082C31800E751A4 /* Player.swift in Sources */,
 				6DA279A52082BA3B00E751A4 /* Card.swift in Sources */,
+				6DA0F5172084CA770085B499 /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
