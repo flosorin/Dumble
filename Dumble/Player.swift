@@ -50,6 +50,13 @@ class Player {
         cards.append(contentsOf: cardsTmp)
         cardsTmp.removeAll()
     }
+    
+    func updateHandScore() {
+        handScore = 0
+        for card in cards {
+            handScore += card.getDumbleValue()
+        }
+    }
 }
 
 class PlayerUser : Player {
