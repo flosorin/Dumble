@@ -33,6 +33,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Pile and discard
     var pile = Deck()
     var discard : [Card] = []
+    var discardCardsNodes : [SKSpriteNode] = []
+    var discardCardsList : [String : SKSpriteNode] = [:]
+    var nbDiscardCardsToShow = 0
     
     // Texture for the back of a card
     let backTexture = SKTexture(imageNamed: "back")
@@ -47,6 +50,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Pile
         createPileNode()
+        
+        // Discard
+        createDiscardNodes()
     }
     
     // Touch management
@@ -60,6 +66,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     playerCardsTouchManager(cardNode: cardNode)
                 } else if nodeName == "pile" { // Check if the node is the pile
                     pileTouchManager()
+                } else if let cardNode = discardCardsList[nodeName] {
+                    discardTouchManager(cardNode: cardNode)
                 }
             } else {
                 // Still debug, we definitely need a real "deal button"
@@ -76,5 +84,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         handRight.texture = SKTexture(imageNamed: "Hand_\(handCounter)")
         
         displayPlayerCards()
+        displayDiscardCards() 
     }
 }
