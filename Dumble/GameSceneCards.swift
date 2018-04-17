@@ -49,17 +49,17 @@ extension GameScene {
     
     func pileTouchManager() {
         // Check if the interaction is legit
-        if (player.isSwitchAllowed()) {
+        if ((players[0] as! PlayerUser).isSwitchAllowed()) {
             resetPlayerCardsPosition()
-            givePileTopToPlayer() // Call generic method
-            player.resetSelected()
+            givePileTopToPlayer(playerIndex: 0) // Call generic method
+            (players[0] as! PlayerUser).resetSelected()
             updatePlayerHandScore()
         }
     }
     
-    func givePileTopToPlayer() {
+    func givePileTopToPlayer(playerIndex: Int) {
         // The player recover the top card of the pile
-        switchPlayerCards(cardToPick: pile.cards[pile.topCard])
+        switchPlayerCards(cardToPick: pile.cards[pile.topCard], playerIndex: playerIndex)
         // Update the pile top card
         if pile.topCard > 0 {
             pile.topCard -= 1
@@ -79,32 +79,32 @@ extension GameScene {
     func discardTouchManager (cardNode: SKSpriteNode) {
         let index = (discard.count - 1) - discardCardsNodes.index(of: cardNode)!
         // Check if the interaction is legit
-        if (player.isSwitchAllowed()) {
+        if ((players[0] as! PlayerUser).isSwitchAllowed()) {
             resetPlayerCardsPosition()
-            giveDiscardToPlayer(index: index) // Call generic method
-            player.resetSelected()
+            giveDiscardToPlayer(discardIndex: index, playerIndex: 0) // Call generic method
+            (players[0] as! PlayerUser).resetSelected()
             updatePlayerHandScore()
         }
     }
     
-    func giveDiscardToPlayer(index: Int) {
+    func giveDiscardToPlayer(discardIndex: Int, playerIndex: Int) {
         // The player recover the selected discard card
-        switchPlayerCards(cardToPick: discard[index].clone())
+        switchPlayerCards(cardToPick: discard[discardIndex].clone(), playerIndex: playerIndex)
         // The card is removed from the discard
-        discard.remove(at: index)
+        discard.remove(at: discardIndex)
     }
     
-    func switchPlayerCards(cardToPick: Card) {
+    func switchPlayerCards(cardToPick: Card, playerIndex: Int) {
         // The selected cards go to the discard
-        for card in player.cards {
+        for card in players[playerIndex].cards {
             if card.isSelected {
                 discard.append(card.clone())
                 discard.last?.isSelected = false
             }
         }
-        nbDiscardCardsToShow = player.nbCardsSelected()
-        player.removeSelectedCards()
-        player.addCard(card: cardToPick)
+        nbDiscardCardsToShow = players[playerIndex].nbCardsSelected()
+        players[playerIndex].removeSelectedCards()
+        players[playerIndex].addCard(card: cardToPick)
     }
     
     func dealCards() {
@@ -112,21 +112,16 @@ extension GameScene {
         pile.melt()
         
         // Reset players (remove all cards and reset scores)
-        player.reset()
-        playerIALeft.reset()
-        playerIATop.reset()
-        playerIARight.reset()
+        for player in players {
+            player.reset()
+        }
         
         // Deal the cards (all players)
         for _ in 0...4 {
-            player.addCard(card: pile.cards[pile.topCard])
-            pile.topCard -= 1
-            playerIALeft.addCard(card: pile.cards[pile.topCard])
-            pile.topCard -= 1
-            playerIATop.addCard(card: pile.cards[pile.topCard])
-            pile.topCard -= 1
-            playerIARight.addCard(card: pile.cards[pile.topCard])
-            pile.topCard -= 1
+            for player in players {
+                player.addCard(card: pile.cards[pile.topCard])
+                pile.topCard -= 1
+            }
         }
         // Deal the initial discard card
         discard.append(pile.cards[pile.topCard])

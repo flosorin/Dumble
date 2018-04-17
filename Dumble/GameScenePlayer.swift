@@ -13,7 +13,7 @@ import GameplayKit
 // Define all methods related to the player "user"
 extension GameScene {
     
-    func createPlayer() {
+    func createPlayerDisplay() {
         createPlayerHand()
         createPlayerHandScoreLabel()
     }
@@ -43,19 +43,19 @@ extension GameScene {
     }
     
     func displayPlayerCards() {
-        switch player.cards.count {
+        switch players[0].cards.count {
         case 0:
             for index in 0...4 {
                 playerCardsNodes[index].isHidden = true
             }
         default:
-            player.sortCards()
-            for index in 0...player.cards.count - 1 {
-                playerCardsNodes[index].texture = player.cards[index].picture
+            players[0].sortCards()
+            for index in 0...players[0].cards.count - 1 {
+                playerCardsNodes[index].texture = players[0].cards[index].picture
                 playerCardsNodes[index].isHidden = false
             }
-            if player.cards.count < playerCardsNodes.count {
-                for index in player.cards.count...playerCardsNodes.count - 1 {
+            if players[0].cards.count < playerCardsNodes.count {
+                for index in players[0].cards.count...playerCardsNodes.count - 1 {
                     playerCardsNodes[index].isHidden = true
                 }
             }
@@ -66,18 +66,18 @@ extension GameScene {
         let index = playerCardsNodes.index(of: cardNode)!
         // If the card is in its standard position, check if we can select it
         if (cardNode.position.y == 1.5 * playerCardsNodes[0].size.height) {
-            if (player.isCardSelectable(index: index)) {
+            if ((players[0] as! PlayerUser).isCardSelectable(index: index)) {
                 // Make the card goes up to indicate that it is selected
                 cardNode.position.y += playerCardsNodes[0].size.height / 2
-                player.cards[index].isSelected = true
+                players[0].cards[index].isSelected = true
             }
         } else {
             // Always possible to go back to initial position
             cardNode.position.y -= playerCardsNodes[0].size.height / 2
-            player.cards[index].isSelected = false
+            players[0].cards[index].isSelected = false
             // Reset player selected flags if there is one or less card(s) selected
-            if (player.nbCardsSelected() <= 1) {
-                player.resetSelected()
+            if (players[0].nbCardsSelected() <= 1) {
+                (players[0] as! PlayerUser).resetSelected()
             }
         }
     }
@@ -89,7 +89,7 @@ extension GameScene {
     }
     
     func updatePlayerHandScore() {
-        player.updateHandScore()
-        playerHandScoreLabelNode.text = "Hand: \(player.handScore)"
+        (players[0] as! PlayerUser).updateHandScore()
+        playerHandScoreLabelNode.text = "Hand: \((players[0] as! PlayerUser).handScore)"
     }
 }

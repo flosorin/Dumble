@@ -12,10 +12,7 @@ import GameplayKit
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Players
-    var player = PlayerUser()
-    var playerIALeft = PlayerIA()
-    var playerIATop = PlayerIA()
-    var playerIARight = PlayerIA()
+    var players : [Player] = []
     
     // IA's hands
     var handCounter = 5
@@ -44,11 +41,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var dealButtonLabelNode : SKLabelNode!
     
     override func didMove(to view: SKView) {
+        // Init players array
+        createPlayers()
+        
         // IA's hands
         createIAHands()
         
-        // All player user display
-        createPlayer()
+        // Player user display
+        createPlayerDisplay()
         
         // Pile
         createPileNode()
@@ -63,6 +63,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         dealButtonLabelNode.position = CGPoint(x: dealButtonLabelNode.frame.width * 0.75, y: frame.maxY - dealButtonLabelNode.frame.height * 1.5)
         dealButtonLabelNode.name = "deal"
         addChild(dealButtonLabelNode)
+    }
+    
+    func createPlayers() {
+        players.append(PlayerUser())
+        for _ in 1...3 {
+            players.append(PlayerIA())
+        }
     }
     
     // Touch management

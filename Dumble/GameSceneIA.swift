@@ -34,8 +34,8 @@ extension GameScene {
     }
     
     func displayIAHands() {
-        handLeft.texture = SKTexture(imageNamed: "Hand_\(playerIALeft.cards.count)")
-        handTop.texture = SKTexture(imageNamed: "Hand_\(playerIATop.cards.count)")
-        handRight.texture = SKTexture(imageNamed: "Hand_\(playerIARight.cards.count)")
+        handLeft.texture = SKTexture(imageNamed: "Hand_\(players[1].cards.count)")
+        handTop.texture = SKTexture(imageNamed: "Hand_\(players[2].cards.count)")
+        handRight.texture = SKTexture(imageNamed: "Hand_\(players[3].cards.count)")
     }
 }
