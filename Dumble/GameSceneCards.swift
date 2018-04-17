@@ -63,13 +63,16 @@ extension GameScene {
         // Update the pile top card
         if pile.topCard > 0 {
             pile.topCard -= 1
-        } else { // If there is no card left, the discard become the new pile
-            if let cardTmp = discard.last {
-                discard.removeLast()
-                pile.reconstruct(withCards: discard)
-                discard.removeAll()
-                discard.append(cardTmp)
-            }
+        } else { // If there is no card left, the discard become the new pile (we just keep the last card(s))
+            // Copy the last cards before removing it to avoid copying it to the pile
+            var discardTmp = discard[discard.count - nbDiscardCardsToShow...discard.count - 1]
+            discard.removeLast(nbDiscardCardsToShow)
+            // Reconstruct the pile
+            pile.reconstruct(withCards: discard)
+            // Reconstruct the discard
+            discard.removeAll()
+            discard.append(contentsOf: discardTmp)
+            discardTmp.removeAll()
         }
     }
     
@@ -110,19 +113,19 @@ extension GameScene {
         
         // Reset players (remove all cards and reset scores)
         player.reset()
-        playerIA1.reset()
-        playerIA2.reset()
-        playerIA3.reset()
+        playerIALeft.reset()
+        playerIATop.reset()
+        playerIARight.reset()
         
         // Deal the cards (all players)
         for _ in 0...4 {
             player.addCard(card: pile.cards[pile.topCard])
             pile.topCard -= 1
-            playerIA1.addCard(card: pile.cards[pile.topCard])
+            playerIALeft.addCard(card: pile.cards[pile.topCard])
             pile.topCard -= 1
-            playerIA2.addCard(card: pile.cards[pile.topCard])
+            playerIATop.addCard(card: pile.cards[pile.topCard])
             pile.topCard -= 1
-            playerIA3.addCard(card: pile.cards[pile.topCard])
+            playerIARight.addCard(card: pile.cards[pile.topCard])
             pile.topCard -= 1
         }
         // Deal the initial discard card

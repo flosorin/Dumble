@@ -13,9 +13,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Players
     var player = PlayerUser()
-    var playerIA1 = PlayerIA()
-    var playerIA2 = PlayerIA()
-    var playerIA3 = PlayerIA()
+    var playerIALeft = PlayerIA()
+    var playerIATop = PlayerIA()
+    var playerIARight = PlayerIA()
     
     // IA's hands
     var handCounter = 5
@@ -40,8 +40,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Texture for the back of a card
     let backTexture = SKTexture(imageNamed: "back")
     
+    // TO BE REMOVED: temporary "deal" button
+    var dealButtonLabelNode : SKLabelNode!
+    
     override func didMove(to view: SKView) {
-        
         // IA's hands
         createIAHands()
         
@@ -53,11 +55,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Discard
         createDiscardNodes()
+        
+        // TO BE REMOVED: temporary "deal" button
+        dealButtonLabelNode = SKLabelNode(text: "DEAL")
+        dealButtonLabelNode.fontSize = 30
+        dealButtonLabelNode.fontColor = SKColor.white
+        dealButtonLabelNode.position = CGPoint(x: dealButtonLabelNode.frame.width * 0.75, y: frame.maxY - dealButtonLabelNode.frame.height * 1.5)
+        dealButtonLabelNode.name = "deal"
+        addChild(dealButtonLabelNode)
     }
     
     // Touch management
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
         for touch in touches {
             let location = touch.location(in: self)
             let node : SKNode = self.atPoint(location)
@@ -68,21 +77,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     pileTouchManager()
                 } else if let cardNode = discardCardsList[nodeName] {
                     discardTouchManager(cardNode: cardNode)
+                } else if nodeName == "deal" {
+                    dealCards()
                 }
-            } else {
-                // Still debug, we definitely need a real "deal button"
-                dealCards()
             }
         }
     }
     
     // Called before each frame is rendered
     override func update(_ currentTime: TimeInterval) {
-        
-        handLeft.texture = SKTexture(imageNamed: "Hand_\(handCounter)")
-        handTop.texture = SKTexture(imageNamed: "Hand_\(handCounter)")
-        handRight.texture = SKTexture(imageNamed: "Hand_\(handCounter)")
-        
+        displayIAHands()
         displayPlayerCards()
         displayDiscardCards() 
     }

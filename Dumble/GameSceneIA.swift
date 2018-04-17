@@ -32,4 +32,10 @@ extension GameScene {
         hand.zRotation = angle
         return hand
     }
+    
+    func displayIAHands() {
+        handLeft.texture = SKTexture(imageNamed: "Hand_\(playerIALeft.cards.count)")
+        handTop.texture = SKTexture(imageNamed: "Hand_\(playerIATop.cards.count)")
+        handRight.texture = SKTexture(imageNamed: "Hand_\(playerIARight.cards.count)")
+    }
 }
