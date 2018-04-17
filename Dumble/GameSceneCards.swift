@@ -144,8 +144,8 @@ extension GameScene {
     func displayDiscardCards() {
         if (nbDiscardCardsToShow != 0) {
             for index in 0...nbDiscardCardsToShow - 1 {
-                discardCardsNodes[index].texture = discard[(discard.count - 1) - index].picture
-                discardCardsNodes[index].isHidden = false
+                discardCardsNodes[(nbDiscardCardsToShow - 1) - index].texture = discard[(discard.count - 1) - index].picture
+                discardCardsNodes[(nbDiscardCardsToShow - 1) - index].isHidden = false
             }
             if (nbDiscardCardsToShow < discardCardsNodes.count) {
                 for index in nbDiscardCardsToShow...discardCardsNodes.count - 1 {
