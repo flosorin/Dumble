@@ -252,6 +252,21 @@ class PlayerIA : Player {
                 break
             }
         }
+        // Finally, if all cards are "not to play", then we play all and redo the checking for the lowest value in available cards. This case is quite unlikely to happen because it means that the player owns five following cards and one of the discard cards also follows. Yet, if it happens, the player will not be able to decide what to do, so we have to tell "him"
+        if (cardsNotToPlayIndex.count == 5) {
+            // Select all cards
+            for cardInHand in cards {
+                cardInHand.isSelected = true
+            }
+            // Reasign the card to pick
+            cardToPickIndex = nil
+            for (index, cardToChoose) in cardsAvailable.enumerated() {
+                if (cardToChoose.getDumbleValue() <= 5) {
+                    cardToPickIndex = index
+                    break
+                }
+            }
+        }
         
         return cardToPickIndex
     }
