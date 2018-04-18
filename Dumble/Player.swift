@@ -135,14 +135,17 @@ class PlayerUser : Player {
 
 class PlayerIA : Player {
     
-    func playTurn(cardsAvailable : [Card]) -> Int? {
+    var cardsNotToPlayIndex : [Int] = [] // Cards needed by the card to pick that, therefore, cannot be switched
+    var cardsToPlayIndex : [Int] = [] // Cards that we can discard together that, therefore, must not be considered when looking for the card to pick
+    var cardToPickIndex = -1
+    
+    func playTurn(cardsAvailable : [Card]) -> Int {
         
         if (!checkDumble()) {
-            sortCards()
             return defSwitch(cardsAvailable: cardsAvailable)
         }
         
-        return -1 // Means that there is a dumble
+        return -2 // Means that there is a dumble (-1 means that we want to pick the top pile card)
     }
     
     private func checkDumble() -> Bool {
@@ -150,12 +153,58 @@ class PlayerIA : Player {
         return false
     }
     
-    // /!\ HUGE function TO BE REFACTORED
-    func defSwitch(cardsAvailable : [Card]) -> Int? {
-        var cardsNotToPlayIndex : [Int] = [] // Cards needed by the card to pick that, therefore, cannot be switched
-        var cardsToPlayIndex : [Int] = [] // Cards that we can discard together that, therefore, must not be considered when looking for the card to pick
-        var cardToPickIndex : Int?
+    private func defSwitch(cardsAvailable : [Card]) -> Int {
+        // Reset useful vars
+        cardsNotToPlayIndex.removeAll()
+        cardsToPlayIndex.removeAll()
+        cardToPickIndex = -1
+        
         // If a card in the list creates following, we take it.
+        checkFollowingAvailable(cardsAvailable: cardsAvailable)
+        
+        // If we have following cards in hand (that cannot be improved by the card to pick), we discard them
+        checkFollowingInHand()
+        
+        // If we have not found a card to pick yet, check for pairs that do not conflict with cards to play
+        if cardToPickIndex == -1 {
+            checkPairsAvailable(cardsAvailable: cardsAvailable)
+        }
+        
+        // Now, if we have not found the card(s) to discard, we try to make pairs
+        if (cardsToPlayIndex.count == 0) {
+            checkPairsInHand()
+        }
+        
+        // Last chance for the card to pick: pick the lowest car with a value under five
+        if (cardToPickIndex == -1) {
+            checkLowestAvailable(cardsAvailable: cardsAvailable)
+        }
+        
+        // If we have not chosen a card to discard, we discard the highest one which does not conflict with previous plans
+        if (cardsToPlayIndex.count == 0) {
+            checkHighestInHand()
+        }
+        // Finally, if all cards are "not to play", then we play all and redo the checking for the lowest value in available cards. This case is quite unlikely to happen because it means that the player owns five following cards and one of the discard cards also follows. Yet, if it happens, the player will not be able to decide what to do, so we have to tell "him"
+        if (cardsNotToPlayIndex.count == 5) {
+            // Select all cards
+            for cardInHand in cards {
+                cardInHand.isSelected = true
+            }
+            // Reasign the card to pick
+            cardToPickIndex = -1
+            for (index, cardToChoose) in cardsAvailable.enumerated() {
+                if (cardToChoose.getDumbleValue() <= 5) {
+                    cardToPickIndex = index
+                    break
+                }
+            }
+        }
+        
+        return cardToPickIndex
+    }
+    
+    // Check following cards with discard
+    private func checkFollowingAvailable(cardsAvailable : [Card]) {
         for (index, cardToChoose) in cardsAvailable.enumerated() {
             cardsNotToPlayIndex = checkFollowingCards(newCard: cardToChoose)
             if (cardsNotToPlayIndex.count != 0) {
@@ -163,7 +212,10 @@ class PlayerIA : Player {
                 break // We found the one, we can quit the for
             }
         }
-        // If we have following cards in hand (that cannot be improved by the card to pick), we discard them
+    }
+    
+    // Check following cards in hand
+    private func checkFollowingInHand() {
         followingHand: for (index, cardInHand) in cards.enumerated() {
             // First, check that we can consider this card without destroying previous plans
             if let _ = cardsNotToPlayIndex.index(of: index) {
@@ -179,96 +231,13 @@ class PlayerIA : Player {
                 }
                 // If we reach this point, we can safely select the cards to play and quit the for
                 cards[index].isSelected = true
+                cardsToPlayIndex.append(contentsOf: tmpIndexes)
                 for index2 in cardsToPlayIndex {
                     cards[index2].isSelected = true
                 }
-                cardsToPlayIndex = tmpIndexes
                 break
             }
         }
-        // If we have not found a card to pick yet, check for pairs that do not conflict with cards to play
-        if cardToPickIndex == nil {
-            pairingPick: for (index, cardToChoose) in cardsAvailable.enumerated() {
-                let tmpIndexes = checkPairs(newCard: cardToChoose)
-                if (tmpIndexes.count != 0) {
-                    // Check that these cards will not be discarded
-                    for index2 in tmpIndexes {
-                        if let _ = cardsToPlayIndex.index(of: index2) {
-                            continue pairingPick // Check next card
-                        }
-                    }
-                    // If we reach this point, we can safely pick the card and quit the for
-                    cardToPickIndex = index
-                    cardsNotToPlayIndex = tmpIndexes
-                    break
-                }
-            }
-        }
-        // Now, if we have not found the card(s) to discard, we try to make pairs
-        if (cardsToPlayIndex.count == 0) {
-            pairingHand: for (index, cardInHand) in cards.enumerated() {
-                let tmpIndexes = checkPairs(newCard: cardInHand)
-                if (tmpIndexes.count != 0) {
-                    // check that we can consider these cards without destroying previous plans
-                    for index2 in tmpIndexes {
-                        if let _ = cardsNotToPlayIndex.index(of: index2) {
-                            continue pairingHand // Check next card
-                        }
-                    }
-                    // If we reach this point, we can safely select the cards to play and quit the for
-                    cards[index].isSelected = true
-                    for index2 in cardsToPlayIndex {
-                        cards[index2].isSelected = true
-                    }
-                    cardsToPlayIndex = tmpIndexes
-                    break
-                }
-            }
-        }
-        // Last chance for the card to pick: pick the lowest car with a value under five
-        if (cardToPickIndex == nil) {
-            for (index, cardToChoose) in cardsAvailable.enumerated() {
-                // First, check that we can consider this card without destroying previous plans
-                if let _ = cardsToPlayIndex.index(of: index) {
-                    continue // Check next card
-                }
-                // Then we check its value
-                if (cardToChoose.getDumbleValue() <= 5) {
-                    cardToPickIndex = index
-                    break
-                }
-            }
-        }
-        // If we have not chosen a card to discard, we discard the highest one which does not conflict with previous plans
-        if (cardsToPlayIndex.count == 0) {
-            // The cards are already sorted so we can iterate in the reverse way
-            for (index, cardInHand) in cards.enumerated().reversed() {
-                // First, check that we can consider this card without destroying previous plans
-                if let _ = cardsNotToPlayIndex.index(of: index) {
-                    continue // Check next card
-                }
-                // If we reach this point, we just select this card
-                cardInHand.isSelected = true
-                break
-            }
-        }
-        // Finally, if all cards are "not to play", then we play all and redo the checking for the lowest value in available cards. This case is quite unlikely to happen because it means that the player owns five following cards and one of the discard cards also follows. Yet, if it happens, the player will not be able to decide what to do, so we have to tell "him"
-        if (cardsNotToPlayIndex.count == 5) {
-            // Select all cards
-            for cardInHand in cards {
-                cardInHand.isSelected = true
-            }
-            // Reasign the card to pick
-            cardToPickIndex = nil
-            for (index, cardToChoose) in cardsAvailable.enumerated() {
-                if (cardToChoose.getDumbleValue() <= 5) {
-                    cardToPickIndex = index
-                    break
-                }
-            }
-        }
-        
-        return cardToPickIndex
     }
     
     // Check for cards making following list with the given card and return them if existing
@@ -308,14 +277,84 @@ class PlayerIA : Player {
         return followingCardsIndex
     }
     
+    // Check pairs with discard
+    private func checkPairsAvailable(cardsAvailable: [Card]) {
+        pairingPick: for (index, cardToChoose) in cardsAvailable.enumerated() {
+            let tmpIndexes = checkPairs(newCard: cardToChoose)
+            if (tmpIndexes.count != 0) {
+                // Check that these cards will not be discarded
+                for index2 in tmpIndexes {
+                    if let _ = cardsToPlayIndex.index(of: index2) {
+                        continue pairingPick // Check next card
+                    }
+                }
+                // If we reach this point, we can safely pick the card and quit the for
+                cardToPickIndex = index
+                cardsNotToPlayIndex.append(contentsOf: tmpIndexes)
+                break
+            }
+        }
+    }
+    
+    // Check pairs in hand
+    private func checkPairsInHand() {
+        pairingHand: for (index, cardInHand) in cards.enumerated() {
+            let tmpIndexes = checkPairs(newCard: cardInHand, forbiddenIndex: index) // Do not compare the card to itself !
+            if (tmpIndexes.count != 0) {
+                // check that we can consider these cards without destroying previous plans
+                for index2 in tmpIndexes {
+                    if let _ = cardsNotToPlayIndex.index(of: index2) {
+                        continue pairingHand // Check next card
+                    }
+                }
+                // If we reach this point, we can safely select the cards to play and quit the for
+                cards[index].isSelected = true
+                cardsToPlayIndex.append(contentsOf: tmpIndexes)
+                for index2 in cardsToPlayIndex {
+                    cards[index2].isSelected = true
+                }
+                break
+            }
+        }
+    }
+    
     // Check for cards making pair with the given card and return them if existing
-    private func checkPairs(newCard: Card) -> [Int] {
+    private func checkPairs(newCard: Card, forbiddenIndex: Int = -1) -> [Int] {
         var pairsIndex : [Int] = []
         for (index, cardInHand) in cards.enumerated() {
-            if (cardInHand.rank.rawValue == newCard.rank.rawValue) {
+            if (index != forbiddenIndex) && (cardInHand.rank.rawValue == newCard.rank.rawValue) {
                 pairsIndex.append(index)
             }
         }
         return pairsIndex
+    }
+    
+    // Pick the card if its dumble value is under five
+    private func checkLowestAvailable(cardsAvailable: [Card]) {
+        for (index, cardToChoose) in cardsAvailable.enumerated() {
+            // First, check that we can consider this card without destroying previous plans
+            if let _ = cardsToPlayIndex.index(of: index) {
+                continue // Check next card
+            }
+            // Then we check its value
+            if (cardToChoose.getDumbleValue() <= 5) {
+                cardToPickIndex = index
+                break
+            }
+        }
+    }
+    
+    // Pick the highest autorized card in hand
+    private func checkHighestInHand() {
+        // The cards are already sorted so we can iterate in the reverse way
+        for index in (0...(cards.count - 1)).reversed() {
+            // First, check that we can consider this card without destroying previous plans
+            if let _ = cardsNotToPlayIndex.index(of: index) {
+                continue // Check next card
+            }
+            // If we reach this point, we just select this card
+            cards[index].isSelected = true
+            break
+        }
     }
 }

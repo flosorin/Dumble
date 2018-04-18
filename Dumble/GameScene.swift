@@ -16,10 +16,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var playerIndex = 0 // Tells which player has to play
     
     // IA's hands
-    var handCounter = 5
-    var handTop : SKSpriteNode!
-    var handLeft : SKSpriteNode!
-    var handRight : SKSpriteNode!
+    var handsIA : [SKSpriteNode] = []
+    var showIAHands = true
     
     // Player user view
     // Player cards

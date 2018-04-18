@@ -29,11 +29,13 @@ extension GameScene {
         }
     }
     
-    func createCardNode(cardTexture : SKTexture, cardPosition : CGPoint) -> SKSpriteNode {
+    func createCardNode(cardTexture : SKTexture, cardPosition : CGPoint, angle : CGFloat = 0.0, depthPosition : CGFloat = 0.0, cardAnchor: CGPoint = CGPoint(x: 0.5, y: 0.5)) -> SKSpriteNode {
         // Create the base of a card
         let card = SKSpriteNode(texture: cardTexture)
-        card.zPosition = 10
+        card.anchorPoint = cardAnchor
         card.position = cardPosition
+        card.zRotation = angle
+        card.zPosition = depthPosition
         // Resize it keeping aspect ratio
         card.size = resizeWidth(oldSize: card.size, newWidth: frame.width / 7)
         return card
@@ -132,6 +134,7 @@ extension GameScene {
                 pile.topCard -= 1
             }
         }
+        
         // Deal the initial discard card
         discard.append(pile.cards[pile.topCard])
         nbDiscardCardsToShow = 1
@@ -139,10 +142,6 @@ extension GameScene {
         
         // Update the hand score label
         updatePlayerHandScore()
-        
-        handLeft.isHidden = false
-        handTop.isHidden = false
-        handRight.isHidden = false
     }
     
     func displayDiscardCards() {

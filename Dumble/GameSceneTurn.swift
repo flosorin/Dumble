@@ -29,9 +29,10 @@ extension GameScene {
             for index in (discard.count - nbDiscardCardsToShow)...(discard.count - 1) {
                 cardsAvailable.append(discard[index])
             }
-            // Play the IA turn
+            // Play the IA turn (1 second delay to see it)
+            let cardToPickIndex = (self.players[self.playerIndex] as! PlayerIA).playTurn(cardsAvailable: cardsAvailable)
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
-                if let cardToPickIndex = (self.players[self.playerIndex] as! PlayerIA).playTurn(cardsAvailable: cardsAvailable) {
+                if  cardToPickIndex >= 0 {
                     self.giveDiscardToPlayer(discardIndex: (self.discard.count - 1) - cardToPickIndex)
                 } else {
                     self.givePileTopToPlayer()
