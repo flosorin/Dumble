@@ -16,6 +16,12 @@ extension GameScene {
     func createPlayerDisplay() {
         createPlayerHand()
         createPlayerHandScoreLabel()
+        // TO BE REMOVED : debug purpose
+        tmpWaitingForYouLabelNode = SKLabelNode(text: "Waiting for you...")
+        tmpWaitingForYouLabelNode.fontSize = 20
+        tmpWaitingForYouLabelNode.fontColor = SKColor.white
+        playerHandScoreLabelNode.position = CGPoint(x: frame.midX, y: playerCardsNodes[0].size.height / 2)
+        addChild(tmpWaitingForYouLabelNode)
     }
     
     func createPlayerHand() {

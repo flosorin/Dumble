@@ -13,6 +13,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Players
     var players : [Player] = []
+    var playerIndex = 0 // Tells which player has to play
     
     // IA's hands
     var handCounter = 5
@@ -20,12 +21,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var handLeft : SKSpriteNode!
     var handRight : SKSpriteNode!
     
-    // Player view
+    // Player user view
     // Player cards
     var playerCardsNodes : [SKSpriteNode] = []
     var playerCardsList : [String : SKSpriteNode] = [:]
     // Player hand score
     var playerHandScoreLabelNode : SKLabelNode!
+    // TO BE REMOVED: debug purpose
+    var tmpWaitingForYouLabelNode: SKLabelNode!
     
     // Pile and discard
     var pile = Deck()
@@ -82,9 +85,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     playerCardsTouchManager(cardNode: cardNode)
                 } else if nodeName == "pile" { // Check if the node is the pile
                     pileTouchManager()
-                } else if let cardNode = discardCardsList[nodeName] {
+                } else if let cardNode = discardCardsList[nodeName] { // Check if the node is a discard card
                     discardTouchManager(cardNode: cardNode)
-                } else if nodeName == "deal" {
+                } else if nodeName == "deal" { // Check if the node is the deal button
                     dealCards()
                 }
             }

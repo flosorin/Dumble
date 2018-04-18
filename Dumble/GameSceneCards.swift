@@ -48,18 +48,21 @@ extension GameScene {
     }
     
     func pileTouchManager() {
-        // Check if the interaction is legit
-        if ((players[0] as! PlayerUser).isSwitchAllowed()) {
-            resetPlayerCardsPosition()
-            givePileTopToPlayer(playerIndex: 0) // Call generic method
-            (players[0] as! PlayerUser).resetSelected()
-            updatePlayerHandScore()
+        // Firstly, check if this is the user turn
+        if (playerIndex == 0) {
+            // Then, check if the interaction is legit
+            if ((players[0] as! PlayerUser).isSwitchAllowed()) {
+                resetPlayerCardsPosition()
+                givePileTopToPlayer() // Call generic method
+                (players[0] as! PlayerUser).resetSelected()
+                updatePlayerHandScore()
+            }
         }
     }
     
-    func givePileTopToPlayer(playerIndex: Int) {
+    func givePileTopToPlayer() {
         // The player recover the top card of the pile
-        switchPlayerCards(cardToPick: pile.cards[pile.topCard], playerIndex: playerIndex)
+        switchPlayerCards(cardToPick: pile.cards[pile.topCard])
         // Update the pile top card
         if pile.topCard > 0 {
             pile.topCard -= 1
@@ -77,24 +80,27 @@ extension GameScene {
     }
     
     func discardTouchManager (cardNode: SKSpriteNode) {
-        let index = (discard.count - 1) - discardCardsNodes.index(of: cardNode)!
-        // Check if the interaction is legit
-        if ((players[0] as! PlayerUser).isSwitchAllowed()) {
-            resetPlayerCardsPosition()
-            giveDiscardToPlayer(discardIndex: index, playerIndex: 0) // Call generic method
-            (players[0] as! PlayerUser).resetSelected()
-            updatePlayerHandScore()
+        // Firstly, check if this is the user turn
+        if (playerIndex == 0) {
+            let index = (discard.count - 1) - discardCardsNodes.index(of: cardNode)!
+            // Then, check if the interaction is legit
+            if ((players[0] as! PlayerUser).isSwitchAllowed()) {
+                resetPlayerCardsPosition()
+                giveDiscardToPlayer(discardIndex: index) // Call generic method
+                (players[0] as! PlayerUser).resetSelected()
+                updatePlayerHandScore()
+            }
         }
     }
     
-    func giveDiscardToPlayer(discardIndex: Int, playerIndex: Int) {
+    func giveDiscardToPlayer(discardIndex: Int) {
         // The player recover the selected discard card
-        switchPlayerCards(cardToPick: discard[discardIndex].clone(), playerIndex: playerIndex)
+        switchPlayerCards(cardToPick: discard[discardIndex].clone())
         // The card is removed from the discard
         discard.remove(at: discardIndex)
     }
     
-    func switchPlayerCards(cardToPick: Card, playerIndex: Int) {
+    func switchPlayerCards(cardToPick: Card) {
         // The selected cards go to the discard
         for card in players[playerIndex].cards {
             if card.isSelected {
@@ -104,7 +110,10 @@ extension GameScene {
         }
         nbDiscardCardsToShow = players[playerIndex].nbCardsSelected()
         players[playerIndex].removeSelectedCards()
+        // The player recover the card he wanted to pick
         players[playerIndex].addCard(card: cardToPick)
+        // Tells the next player that it is its turn
+        playTurn()
     }
     
     func dealCards() {
