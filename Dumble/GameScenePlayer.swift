@@ -81,7 +81,7 @@ extension GameScene {
                     players[0].cards[nodeIndex].isSelected = false
                     // Reset player selected flags if there is one or less card(s) selected
                     if (players[0].nbCardsSelected() <= 1) {
-                        (players[0] as! PlayerUser).resetSelected()
+                        players[0].resetSelectedFlags()
                     }
                 }
             }

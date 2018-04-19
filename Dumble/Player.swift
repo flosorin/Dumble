@@ -16,6 +16,10 @@ class Player {
     var handScore = 0
     var dumbleSaid = false
     
+    // Var used to manage multiple card selection
+    var sameRankSelected = false
+    var sameSuitSelected = false
+    
     func addCard(card : Card) {
         cards.append(card)
     }
@@ -74,16 +78,15 @@ class Player {
             handScore += card.getDumbleValue()
         }
     }
+    
+    func resetSelectedFlags() {
+        sameRankSelected = false
+        sameSuitSelected = false
+    }
 }
 
 class PlayerUser : Player {
-    
-    // Var used to manage multiple card selection
-    var sameRankSelected = false
-    var sameSuitSelected = false
-    
-    
-    
+
     func isCardSelectable(index: Int) -> Bool {
         // If there is no card selected, we can obviously select this one
         if (nbCardsSelected() == 0) {
@@ -126,11 +129,6 @@ class PlayerUser : Player {
         // If we are here, then everything is legit
         return true
     }
-    
-    func resetSelected() {
-        sameRankSelected = false
-        sameSuitSelected = false
-    }
 }
 
 class PlayerIA : Player {
@@ -158,6 +156,7 @@ class PlayerIA : Player {
         cardsNotToPlayIndex.removeAll()
         cardsToPlayIndex.removeAll()
         cardToPickIndex = -1
+        resetSelectedFlags()
         
         // If a card in the list creates following, we take it.
         checkFollowingAvailable(cardsAvailable: cardsAvailable)
@@ -170,10 +169,21 @@ class PlayerIA : Player {
             checkPairsAvailable(cardsAvailable: cardsAvailable)
         }
         
+        // Now, if we found following cards in hand, we have to check if the following cards total value is above the value of the highest card playable (i.e. : nope, we do not drop '1, 2, 3' if we also have a jack in hand...)
+        if (cardsToPlayIndex.count != 0) {
+            // If the following cards were not valid, we can try to make pairs again, if needed
+            if (!areFollowingCardsValid()) {
+                if (cardToPickIndex == -1) {
+                    checkPairsAvailable(cardsAvailable: cardsAvailable)
+                }
+            }
+        }
+        
         // Now, if we have not found the card(s) to discard, we try to make pairs
         if (cardsToPlayIndex.count == 0) {
             checkPairsInHand()
         }
+        
         
         // Last chance for the card to pick: pick the lowest car with a value under five
         if (cardToPickIndex == -1) {
@@ -182,7 +192,7 @@ class PlayerIA : Player {
         
         // If we have not chosen a card to discard, we discard the highest one which does not conflict with previous plans
         if (cardsToPlayIndex.count == 0) {
-            checkHighestInHand()
+            cards[getHighestInHand()].isSelected = true
         }
         // Finally, if all cards are "not to play", then we play all and redo the checking for the lowest value in available cards. This case is quite unlikely to happen because it means that the player owns five following cards and one of the discard cards also follows. Yet, if it happens, the player will not be able to decide what to do, so we have to tell "him"
         if (cardsNotToPlayIndex.count == 5) {
@@ -235,6 +245,7 @@ class PlayerIA : Player {
                 for index2 in cardsToPlayIndex {
                     cards[index2].isSelected = true
                 }
+                sameSuitSelected = true
                 break
             }
         }
@@ -298,14 +309,28 @@ class PlayerIA : Player {
     
     // Check pairs in hand
     private func checkPairsInHand() {
-        pairingHand: for (index, cardInHand) in cards.enumerated() {
+        // Check for pairs starting with the highest card
+        pairingHand: for (index, cardInHand) in cards.enumerated().reversed() {
             let tmpIndexes = checkPairs(newCard: cardInHand, forbiddenIndex: index) // Do not compare the card to itself !
             if (tmpIndexes.count != 0) {
-                // check that we can consider these cards without destroying previous plans
+                // Check that we can consider these cards without destroying previous plans
                 for index2 in tmpIndexes {
                     if let _ = cardsNotToPlayIndex.index(of: index2) {
                         continue pairingHand // Check next card
                     }
+                }
+                // Now, check if the total value of the pair exceeds the value of the highest card playable
+                // Get the value of the highest card playable
+                let highestValue = cards[getHighestInHand()].getDumbleValue()
+                // Get the value of the list of cards
+                var cardList : [Card] = []
+                for index in tmpIndexes {
+                    cardList.append(cards[index])
+                }
+                cardList.append(cardInHand)
+                // Compare these values
+                if (getCardsValue(cards: cardList) < highestValue) {
+                    continue
                 }
                 // If we reach this point, we can safely select the cards to play and quit the for
                 cards[index].isSelected = true
@@ -313,6 +338,7 @@ class PlayerIA : Player {
                 for index2 in cardsToPlayIndex {
                     cards[index2].isSelected = true
                 }
+                sameRankSelected = true
                 break
             }
         }
@@ -344,17 +370,54 @@ class PlayerIA : Player {
         }
     }
     
-    // Pick the highest autorized card in hand
-    private func checkHighestInHand() {
+    // Give the index of the highest playable card
+    private func getHighestInHand() -> Int {
         // The cards are already sorted so we can iterate in the reverse way
         for index in (0...(cards.count - 1)).reversed() {
             // First, check that we can consider this card without destroying previous plans
             if let _ = cardsNotToPlayIndex.index(of: index) {
                 continue // Check next card
             }
-            // If we reach this point, we just select this card
-            cards[index].isSelected = true
-            break
+            // If we reach this point, we have found the card
+            return index
         }
+        
+        return 0 // That is the lowest card but still better than returning nothing
+    }
+    
+    // Return the total dumble value of a list of cards
+    private func getCardsValue(cards: [Card]) -> Int {
+        var dumbleValue = 0
+        
+        for card in cards {
+            dumbleValue += card.getDumbleValue()
+        }
+        
+        return dumbleValue
+    }
+    
+    // Cancel following or pairs selection if their total value is under the highest card playable value
+    private func areFollowingCardsValid() -> Bool {
+        // Get the value of the highest card playable
+        let highestValue = cards[getHighestInHand()].getDumbleValue()
+        // Get the value of the list of cards
+        var cardList : [Card] = []
+        for index in cardsToPlayIndex {
+            cardList.append(cards[index])
+        }
+        // Compare these values
+        if (getCardsValue(cards: cardList) < highestValue) {
+            // Reset variables
+            cardsToPlayIndex.removeAll()
+            for card in cards {
+                if card.isSelected {
+                    card.isSelected = false
+                }
+            }
+            
+            return false
+        }
+        
+        return true
     }
 }

@@ -56,7 +56,7 @@ extension GameScene {
             if ((players[0] as! PlayerUser).isSwitchAllowed()) {
                 resetPlayerCardsPosition()
                 givePileTopToPlayer() // Call generic method
-                (players[0] as! PlayerUser).resetSelected()
+                players[0].resetSelectedFlags()
                 updatePlayerHandScore()
             }
         }
@@ -92,7 +92,7 @@ extension GameScene {
                         let index = (discard.count - 1) - nodeIndex
                         resetPlayerCardsPosition()
                         giveDiscardToPlayer(discardIndex: index) // Call generic method
-                        (players[0] as! PlayerUser).resetSelected()
+                        players[0].resetSelectedFlags()
                         updatePlayerHandScore()
                     }
                 }
