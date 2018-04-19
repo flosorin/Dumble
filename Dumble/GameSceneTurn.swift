@@ -19,6 +19,7 @@ extension GameScene {
             playerIndex += 1
         } else {
             playerIndex = 0
+            turnCounter += 1 // If we go back to the first player, one turn has been completed
         }
         // Check if an IA has to play
         if (playerIndex > 0) {
@@ -30,17 +31,34 @@ extension GameScene {
                 cardsAvailable.append(discard[index])
             }
             // Play the IA turn (1 second delay to see it)
-            let cardToPickIndex = (self.players[self.playerIndex] as! PlayerIA).playTurn(cardsAvailable: cardsAvailable)
+            let cardToPickIndex = (self.players[self.playerIndex] as! PlayerIA).playTurn(cardsAvailable: cardsAvailable, nbTurn: turnCounter, otherPlayersNbCards: getOtherPlayersNbCard())
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
                 if  cardToPickIndex >= 0 {
                     self.giveDiscardToPlayer(discardIndex: (self.discard.count - 1) - cardToPickIndex)
-                } else {
+                } else if cardToPickIndex == -1 {
                     self.givePileTopToPlayer()
+                } else {
+                    self.dumbleManagement()
                 }
             })
         }
         else {
             tmpWaitingForYouLabelNode.isHidden = false
         }
+    }
+    
+    func getOtherPlayersNbCard() -> [Int] {
+        var otherPlayersNbCard : [Int] = []
+        for (index, player) in players.enumerated() {
+            if (index != playerIndex) {
+                otherPlayersNbCard.append(player.cards.count)
+            }
+        }
+        return otherPlayersNbCard
+    }
+    
+    func dumbleManagement() {
+        print("Player \(playerIndex) said dumble")
+        dealCards()
     }
 }

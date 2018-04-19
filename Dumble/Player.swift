@@ -136,22 +136,46 @@ class PlayerIA : Player {
     var cardsNotToPlayIndex : [Int] = [] // Cards needed by the card to pick that, therefore, cannot be switched
     var cardsToPlayIndex : [Int] = [] // Cards that we can discard together that, therefore, must not be considered when looking for the card to pick
     var cardToPickIndex = -1
-    
-    func playTurn(cardsAvailable : [Card]) -> Int {
+
+    func playTurn(cardsAvailable : [Card], nbTurn: Int, otherPlayersNbCards: [Int]) -> Int {
         
-        if (!checkDumble()) {
+        if (!checkDumble(nbTurn: nbTurn, otherPlayersNbCards: otherPlayersNbCards)) {
             return defSwitch(cardsAvailable: cardsAvailable)
         }
         
         return -2 // Means that there is a dumble (-1 means that we want to pick the top pile card)
     }
     
-    private func checkDumble() -> Bool {
-        // TO BE COMPLETED
-        return false
+    private func checkDumble(nbTurn: Int, otherPlayersNbCards: [Int]) -> Bool {
+        // First, update the hand score
+        updateHandScore()
+        // Then, if the hand score is above 9, we cannot say dumble
+        if (handScore > 9) {
+            return false
+        }
+        // Then, check the number of turn
+        let nbTurnAllowed = 4 + 9 - handScore
+        if ((nbTurn > nbTurnAllowed) || (handScore < 3)) {
+            return false
+        }
+        // Finally, check the other players cards number (TO BE IMPROVED)
+        // If at least one other player has only one card, do not attempt to dumble above five
+        if let _ = otherPlayersNbCards.index(of: 1) {
+            if (handScore > 5) {
+                return false
+            }
+        }
+        // If at least one other player has two cards, do not attempt to dumble above seven
+        if let _ = otherPlayersNbCards.index(of: 1) {
+            if (handScore > 7) {
+                return false
+            }
+        }
+        
+        return true
     }
     
-    private func defSwitch(cardsAvailable : [Card]) -> Int {
+    private func defSwitch(cardsAvailable: [Card]) -> Int {
         // Reset useful vars
         cardsNotToPlayIndex.removeAll()
         cardsToPlayIndex.removeAll()

@@ -132,6 +132,9 @@ extension GameScene {
             player.reset()
         }
         
+        // Reset the turn counter
+        turnCounter = 1
+        
         // Deal the cards (all players)
         for _ in 0...4 {
             for player in players {

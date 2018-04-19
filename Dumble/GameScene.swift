@@ -44,6 +44,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // TO BE REMOVED: temporary "deal" button
     var dealButtonLabelNode : SKLabelNode!
     
+    // Turn counter
+    var turnCounter = 1
+    
     override func didMove(to view: SKView) {
         // Init players array
         createPlayers()
