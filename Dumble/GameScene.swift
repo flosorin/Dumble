@@ -38,6 +38,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Texture for the back of a card
     let backTexture = SKTexture(imageNamed: "back")
     
+    // Card node indexes to display
+    let cardNodesIndexes : [Int : [Int]] = [0 : [], 1 : [2], 2 : [1, 2], 3 : [1, 2, 3], 4 : [0, 1, 2, 3], 5 : [0, 1, 2, 3, 4]]
+    
     // TO BE REMOVED: temporary "deal" button
     var dealButtonLabelNode : SKLabelNode!
     

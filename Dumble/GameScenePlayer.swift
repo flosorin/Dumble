@@ -49,41 +49,41 @@ extension GameScene {
     }
     
     func displayPlayerCards() {
-        switch players[0].cards.count {
-        case 0:
-            for index in 0...4 {
-                playerCardsNodes[index].isHidden = true
-            }
-        default:
+        if let nodeIndexes = cardNodesIndexes[players[0].cards.count] {
+            var cardIndex = 0
             players[0].sortCards()
-            for index in 0...players[0].cards.count - 1 {
-                playerCardsNodes[index].texture = players[0].cards[index].picture
-                playerCardsNodes[index].isHidden = false
+            // Hide all nodes
+            for cardNode in playerCardsNodes {
+                cardNode.isHidden = true
             }
-            if players[0].cards.count < playerCardsNodes.count {
-                for index in players[0].cards.count...playerCardsNodes.count - 1 {
-                    playerCardsNodes[index].isHidden = true
-                }
+            // Modify and show nodes according to the index list
+            for nodeIndex in nodeIndexes {
+                playerCardsNodes[nodeIndex].texture = players[0].cards[cardIndex].picture
+                playerCardsNodes[nodeIndex].isHidden = false
+                cardIndex += 1
             }
         }
     }
     
     func playerCardsTouchManager (cardNode: SKSpriteNode) {
-        let index = playerCardsNodes.index(of: cardNode)!
-        // If the card is in its standard position, check if we can select it
-        if (cardNode.position.y == 1.5 * playerCardsNodes[0].size.height) {
-            if ((players[0] as! PlayerUser).isCardSelectable(index: index)) {
-                // Make the card goes up to indicate that it is selected
-                cardNode.position.y += playerCardsNodes[0].size.height / 2
-                players[0].cards[index].isSelected = true
-            }
-        } else {
-            // Always possible to go back to initial position
-            cardNode.position.y -= playerCardsNodes[0].size.height / 2
-            players[0].cards[index].isSelected = false
-            // Reset player selected flags if there is one or less card(s) selected
-            if (players[0].nbCardsSelected() <= 1) {
-                (players[0] as! PlayerUser).resetSelected()
+        if let nodeIndexes = cardNodesIndexes[players[0].cards.count] {
+            if let nodeIndex = nodeIndexes.index(of: playerCardsNodes.index(of: cardNode)!) {
+                // If the card is in its standard position, check if we can select it
+                if (cardNode.position.y == 1.5 * playerCardsNodes[0].size.height) {
+                    if ((players[0] as! PlayerUser).isCardSelectable(index: nodeIndex)) {
+                        // Make the card goes up to indicate that it is selected
+                        cardNode.position.y += playerCardsNodes[0].size.height / 2
+                        players[0].cards[nodeIndex].isSelected = true
+                    }
+                } else {
+                    // Always possible to go back to initial position
+                    cardNode.position.y -= playerCardsNodes[0].size.height / 2
+                    players[0].cards[nodeIndex].isSelected = false
+                    // Reset player selected flags if there is one or less card(s) selected
+                    if (players[0].nbCardsSelected() <= 1) {
+                        (players[0] as! PlayerUser).resetSelected()
+                    }
+                }
             }
         }
     }
