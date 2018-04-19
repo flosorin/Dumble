@@ -13,6 +13,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Players
     var players : [Player] = []
+    var startingPlayerIndex = -1 // Tells which player starts (-1 because dealCards will increase it)
     var playerIndex = 0 // Tells which player has to play
     var playersNameLabelNodes : [SKLabelNode] = []
     var playersScoreLabelNodes : [SKLabelNode] = []
@@ -43,6 +44,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // TO BE REMOVED: temporary "deal" button
     var dealButtonLabelNode : SKLabelNode!
+    var dealButtonPressed = false // Basically tells if we need to reset the scores (new game started by pressing the deal button) or keep it (cards dealt because dumble has been said)
     
     // Turn counter
     var turnCounter = 1
@@ -126,6 +128,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 } else if let cardNode = discardCardsList[nodeName] { // Check if the node is a discard card
                     discardTouchManager(cardNode: cardNode)
                 } else if nodeName == "deal" { // Check if the node is the deal button
+                    dealButtonPressed = true
                     dealCards()
                 }
             }

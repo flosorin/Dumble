@@ -127,13 +127,21 @@ extension GameScene {
         // Melt the pile
         pile.melt()
         
-        // Reset players (remove all cards and reset scores)
+        // Reset players
         for player in players {
-            player.reset()
+            player.reset(resetScore: dealButtonPressed)
+        }
+        if (dealButtonPressed) {
+            dealButtonPressed = false // Reset the state of the deal button
+            startingPlayerIndex = -1 // Reset the starting player (always the user at the beginning of the game)
         }
         
-        // Reset the turn counter
-        turnCounter = 1
+        // Update the starting player
+        if (startingPlayerIndex < players.count - 1) {
+            startingPlayerIndex += 1
+        } else {
+            startingPlayerIndex = 0
+        }
         
         // Deal the cards (all players)
         for _ in 0...4 {
@@ -150,6 +158,11 @@ extension GameScene {
         
         // Update the hand score label
         updatePlayerHandScore()
+        
+        // Launch the turn
+        turnCounter = 1
+        playerIndex = startingPlayerIndex - 1 // Because playTurn starts by increasing the playerIndex
+        playTurn()
     }
     
     func displayDiscardCards() {

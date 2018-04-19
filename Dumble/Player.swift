@@ -13,7 +13,6 @@ class Player {
     var name = "player"
     var cards : [Card] = []
     var score = 0
-    var handScore = 0
     var dumbleSaid = false
     
     // Var used to manage multiple card selection
@@ -24,11 +23,16 @@ class Player {
         cards.append(card)
     }
     
-    func reset() {
+    func softReset() {
+        
+    }
+    
+    func reset(resetScore: Bool) {
         cards.removeAll()
-        score = 0
-        handScore = 0
         dumbleSaid = false
+        if (resetScore) {
+            score = 0
+        }
     }
     
     func sortCards() {
@@ -72,11 +76,13 @@ class Player {
         cardsTmp.removeAll()
     }
     
-    func updateHandScore() {
-        handScore = 0
+    func getHandScore() -> Int {
+        var handScore = 0
         for card in cards {
             handScore += card.getDumbleValue()
         }
+        
+        return handScore
     }
     
     func resetSelectedFlags() {
@@ -148,7 +154,7 @@ class PlayerIA : Player {
     
     private func checkDumble(nbTurn: Int, otherPlayersNbCards: [Int]) -> Bool {
         // First, update the hand score
-        updateHandScore()
+        let handScore = getHandScore()
         // Then, if the hand score is above 9, we cannot say dumble
         if (handScore > 9) {
             return false
@@ -172,6 +178,7 @@ class PlayerIA : Player {
             }
         }
         
+        dumbleSaid = true
         return true
     }
     

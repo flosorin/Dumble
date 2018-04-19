@@ -89,7 +89,6 @@ extension GameScene {
     }
     
     func updatePlayerHandScore() {
-        players[0].updateHandScore()
-        playerHandScoreLabelNode.text = "Hand: \(players[0].handScore)"
+        playerHandScoreLabelNode.text = "Hand: \(players[0].getHandScore())"
     }
 }
