@@ -21,10 +21,16 @@ extension GameScene {
             playerIndex = 0
             turnCounter += 1 // If we go back to the first player, one turn has been completed
         }
+        // Change the color of the name of the current player
+        for (index, nameNode) in playersNameLabelNodes.enumerated() {
+            if (index == playerIndex) {
+                nameNode.fontColor = SKColor.red
+            } else {
+                nameNode.fontColor = SKColor.white
+            }
+        }
         // Check if an IA has to play
         if (playerIndex > 0) {
-            // TO BE REMOVED
-            tmpWaitingForYouLabelNode.isHidden = true
             // Construct the list of available cards
             var cardsAvailable : [Card] = []
             for index in (discard.count - nbDiscardCardsToShow)...(discard.count - 1) {
@@ -41,9 +47,6 @@ extension GameScene {
                     self.dumbleManagement()
                 }
             })
-        }
-        else {
-            tmpWaitingForYouLabelNode.isHidden = false
         }
     }
     

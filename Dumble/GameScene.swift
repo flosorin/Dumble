@@ -14,6 +14,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Players
     var players : [Player] = []
     var playerIndex = 0 // Tells which player has to play
+    var playersNameLabelNodes : [SKLabelNode] = []
+    var playersScoreLabelNodes : [SKLabelNode] = []
     
     // IA's hands
     var handsIA : [SKSpriteNode] = []
@@ -25,8 +27,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var playerCardsList : [String : SKSpriteNode] = [:]
     // Player hand score
     var playerHandScoreLabelNode : SKLabelNode!
-    // TO BE REMOVED: debug purpose
-    var tmpWaitingForYouLabelNode: SKLabelNode!
     
     // Pile and discard
     var pile = Deck()
@@ -51,11 +51,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Init players array
         createPlayers()
         
-        // IA's hands
+        // IA's hands and infos
         createIAHands()
         
         // Player user display
         createPlayerDisplay()
+        
+        // Init players name and score
+        createPlayersDisplay()
         
         // Pile
         createPileNode()
@@ -74,9 +77,40 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func createPlayers() {
         players.append(PlayerUser())
+        players[0].name = "User"
         for _ in 1...3 {
             players.append(PlayerIA())
         }
+        players[1].name = "Joe"
+        players[2].name = "Jack"
+        players[3].name = "Bill"
+    }
+    
+    func createPlayersDisplay() {
+        // Init with common parameters
+        for (index, player) in players.enumerated() {
+            playersNameLabelNodes.append(SKLabelNode(text: player.name))
+            playersScoreLabelNodes.append(SKLabelNode(text: "100"))
+            playersNameLabelNodes[index].fontSize = 20
+            playersScoreLabelNodes[index].fontSize = 20
+            playersNameLabelNodes[index].fontColor = SKColor.white
+            playersScoreLabelNodes[index].fontColor = SKColor.white
+            addChild(playersNameLabelNodes[index])
+            addChild(playersScoreLabelNodes[index])
+        }
+        // Configure the specific position
+        // Player user
+        playersNameLabelNodes[0].position = CGPoint(x: playerCardsNodes[0].size.width, y: playerCardsNodes[0].size.height / 2)
+        playersScoreLabelNodes[0].position = CGPoint(x: frame.midX, y: playerCardsNodes[0].size.height / 2)
+        // IA #1
+        playersNameLabelNodes[1].position = CGPoint(x: frame.width * 0.1, y: frame.height * 0.82)
+        playersScoreLabelNodes[1].position = CGPoint(x: playersNameLabelNodes[1].position.x, y: playersNameLabelNodes[1].position.y - playersScoreLabelNodes[1].frame.height * 1.5)
+        // IA #2
+        playersNameLabelNodes[2].position = CGPoint(x: frame.width * 0.85, y: frame.maxY - playersNameLabelNodes[2].frame.height * 1.5)
+        playersScoreLabelNodes[2].position = CGPoint(x: playersNameLabelNodes[2].position.x, y: playersNameLabelNodes[2].position.y - playersScoreLabelNodes[2].frame.height * 1.5)
+        // IA #3
+        playersNameLabelNodes[3].position = CGPoint(x: frame.width * 0.9, y: frame.height * 0.78)
+        playersScoreLabelNodes[3].position = CGPoint(x: playersNameLabelNodes[3].position.x, y: playersNameLabelNodes[3].position.y - playersScoreLabelNodes[3].frame.height * 1.5)
     }
     
     // Touch management
