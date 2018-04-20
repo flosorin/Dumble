@@ -35,7 +35,7 @@ extension GameScene {
         card3.position = CGPoint(x: 0, y: card3.size.height / 4)
         // Other cards custom parameters
         let cardsAngle = CGFloat(Double.pi / 8)
-        let cardsAnchor = CGPoint(x: 0, y: 0)
+        let cardsAnchor = CGPoint(x: 0.5, y: 0)
         // Correct position to match the anchor changing
         let dx = (cardsAnchor.x - card3.anchorPoint.x) * card3.size.width
         let dy = (cardsAnchor.y - card3.anchorPoint.y) * card3.size.height
@@ -63,23 +63,22 @@ extension GameScene {
     
     func displayIAHands() {
         for index in 1...players.count - 1 {
-            if let nodeIndexes = cardNodesIndexes[players[index].cards.count] {
-                var cardIndex = 0
-                players[index].sortCards()
-                // Hide all nodes
-                for nodeIndex in 1...5 {
-                    if let cardNode : SKSpriteNode = handsIA[index - 1].childNode(withName: "card\(nodeIndex)") as? SKSpriteNode {
-                        cardNode.isHidden = true
-                    }
+            let nodeIndexes = cardNodesIndexes[players[index].cards.count]
+            var cardIndex = 0
+            players[index].sortCards()
+            // Hide all nodes
+            for nodeIndex in 1...5 {
+                if let cardNode : SKSpriteNode = handsIA[index - 1].childNode(withName: "card\(nodeIndex)") as? SKSpriteNode {
+                    cardNode.isHidden = true
                 }
-                // Modify and show nodes according to the index list
-                for nodeIndex in nodeIndexes {
-                    if let cardNode : SKSpriteNode = handsIA[index - 1].childNode(withName: "card\(nodeIndex + 1)") as? SKSpriteNode {
-                        cardNode.texture = showIAHands ? players[index].cards[cardIndex].picture : backTexture
-                        cardNode.isHidden = false
-                    }
-                    cardIndex += 1
+            }
+            // Modify and show nodes according to the index list
+            for nodeIndex in nodeIndexes {
+                if let cardNode : SKSpriteNode = handsIA[index - 1].childNode(withName: "card\(nodeIndex + 1)") as? SKSpriteNode {
+                    cardNode.texture = showIAHands ? players[index].cards[cardIndex].picture : backTexture
+                    cardNode.isHidden = false
                 }
+                cardIndex += 1
             }
         }
     }

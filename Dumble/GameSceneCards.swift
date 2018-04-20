@@ -86,13 +86,12 @@ extension GameScene {
             // Check if the interaction is legit
             if (players[0] as! PlayerUser).isSwitchAllowed() {
                 // Recover the true index
-                if let nodeIndexes = cardNodesIndexes[nbDiscardCardsToShow] {
-                    if let nodeIndex = nodeIndexes.index(of: discardCardsNodes.index(of: cardNode)!) {
-                        let index = discard.count - nbDiscardCardsToShow + nodeIndex
-                        resetPlayerCardsPosition()
-                        giveDiscardToPlayer(discardIndex: index) // Call generic method
-                        (players[0] as! PlayerUser).resetSelectedFlags()
-                    }
+                let nodeIndexes = cardNodesIndexes[nbDiscardCardsToShow]
+                if let nodeIndex = nodeIndexes.index(of: discardCardsNodes.index(of: cardNode)!) {
+                    let index = discard.count - nbDiscardCardsToShow + nodeIndex
+                    resetPlayerCardsPosition()
+                    giveDiscardToPlayer(discardIndex: index) // Call generic method
+                    (players[0] as! PlayerUser).resetSelectedFlags()
                 }
             }
         }
@@ -167,18 +166,17 @@ extension GameScene {
     }
     
     func displayDiscardCards() {
-        if let nodeIndexes = cardNodesIndexes[nbDiscardCardsToShow] {
-            var cardIndex = nbDiscardCardsToShow - 1
-            // Hide all nodes
-            for cardNode in discardCardsNodes {
-                cardNode.isHidden = true
-            }
-            // Modify and show nodes according to the index list
-            for nodeIndex in nodeIndexes {
-                discardCardsNodes[nodeIndex].texture = discard[(discard.count - 1) - cardIndex].picture
-                discardCardsNodes[nodeIndex].isHidden = false
-                cardIndex -= 1
-            }
+        let nodeIndexes = cardNodesIndexes[nbDiscardCardsToShow]
+        var cardIndex = nbDiscardCardsToShow - 1
+        // Hide all nodes
+        for cardNode in discardCardsNodes {
+            cardNode.isHidden = true
+        }
+        // Modify and show nodes according to the index list
+        for nodeIndex in nodeIndexes {
+            discardCardsNodes[nodeIndex].texture = discard[(discard.count - 1) - cardIndex].picture
+            discardCardsNodes[nodeIndex].isHidden = false
+            cardIndex -= 1
         }
     }
 }
