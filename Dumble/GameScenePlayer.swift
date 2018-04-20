@@ -42,6 +42,13 @@ extension GameScene {
         addChild(playerHandScoreLabelNode)
     }
     
+    func displayPlayerUserInfos() {
+        // Update the player cards display
+        displayPlayerCards()
+        // Update the hand score label
+        playerHandScoreLabelNode.text = "Hand: \(players[0].getHandScore())"
+    }
+    
     func displayPlayerCards() {
         if let nodeIndexes = cardNodesIndexes[players[0].cards.count] {
             var cardIndex = 0
@@ -75,7 +82,7 @@ extension GameScene {
                     players[0].cards[nodeIndex].isSelected = false
                     // Reset player selected flags if there is one or less card(s) selected
                     if players[0].nbCardsSelected() <= 1 {
-                        players[0].resetSelectedFlags()
+                        (players[0] as! PlayerUser).resetSelectedFlags()
                     }
                 }
             }
@@ -86,9 +93,5 @@ extension GameScene {
         for cardNode in playerCardsNodes {
             cardNode.position.y = 1.5 * playerCardsNodes[0].size.height
         }
-    }
-    
-    func updatePlayerHandScore() {
-        playerHandScoreLabelNode.text = "Hand: \(players[0].getHandScore())"
     }
 }

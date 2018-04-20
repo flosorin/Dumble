@@ -18,11 +18,6 @@ class Player {
     var hundredReached = false
     var score = 0
     var gameLose = false
-    var dumbleSaid = false
-    
-    // Var used to manage multiple card selection
-    var sameRankSelected = false
-    var sameSuitSelected = false
     
     func addCard(card: Card) {
         cards.append(card)
@@ -30,7 +25,6 @@ class Player {
     
     func reset(resetAll: Bool) {
         cards.removeAll()
-        dumbleSaid = false
         if resetAll {
             fiftyReached = false
             seventyFiveReached = false
@@ -90,9 +84,15 @@ class Player {
         return handScore
     }
     
-    func resetSelectedFlags() {
-        sameRankSelected = false
-        sameSuitSelected = false
+    func updateScore(dumbleFailed: Bool = false) {
+        // Update the score
+        if (dumbleFailed) {
+            score += 25
+        } else {
+            score += getHandScore()
+        }
+        // Handle special cases
+        specialCasesHandler()
     }
     
     func specialCasesHandler() {
@@ -115,6 +115,15 @@ class Player {
 }
 
 class PlayerUser: Player {
+    
+    // Var used to manage multiple card selection
+    var sameRankSelected = false
+    var sameSuitSelected = false
+    
+    func resetSelectedFlags() {
+        sameRankSelected = false
+        sameSuitSelected = false
+    }
 
     func isCardSelectable(index: Int) -> Bool {
         // If there is no card selected, we can obviously select this one
@@ -180,10 +189,12 @@ class PlayerIA: Player {
         if handScore > 9 {
             return false
         }
-        // Then, check the number of turn
-        let nbTurnAllowed = 4 + 9 - handScore
-        if (nbTurn > nbTurnAllowed) || (handScore < 3) {
-            return false
+        // Then, check the number of turn (if the hand score is more than 4)
+        if handScore > 4 {
+            let nbTurnAllowed = 4 + 9 - handScore
+            if nbTurn > nbTurnAllowed {
+                return false
+            }
         }
         // Finally, check the other players cards number (TO BE IMPROVED)
         // If at least one other player has only one card, do not attempt to dumble above five
@@ -198,8 +209,7 @@ class PlayerIA: Player {
                 return false
             }
         }
-        
-        dumbleSaid = true
+
         return true
     }
     
@@ -208,7 +218,9 @@ class PlayerIA: Player {
         cardsNotToPlayIndex.removeAll()
         cardsToPlayIndex.removeAll()
         cardToPickIndex = -1
-        resetSelectedFlags()
+        
+        // Sort the cards
+        sortCards()
         
         // If a card in the list creates following, we take it.
         checkFollowingAvailable(cardsAvailable: cardsAvailable)
@@ -296,7 +308,6 @@ class PlayerIA: Player {
                 for index2 in cardsToPlayIndex {
                     cards[index2].isSelected = true
                 }
-                sameSuitSelected = true
                 break
             }
         }
@@ -389,7 +400,6 @@ class PlayerIA: Player {
                 for index2 in cardsToPlayIndex {
                     cards[index2].isSelected = true
                 }
-                sameRankSelected = true
                 break
             }
         }

@@ -56,8 +56,7 @@ extension GameScene {
             if (players[0] as! PlayerUser).isSwitchAllowed() {
                 resetPlayerCardsPosition()
                 givePileTopToPlayer() // Call generic method
-                players[0].resetSelectedFlags()
-                updatePlayerHandScore()
+                (players[0] as! PlayerUser).resetSelectedFlags()
             }
         }
     }
@@ -92,8 +91,7 @@ extension GameScene {
                         let index = (discard.count - 1) - nodeIndex
                         resetPlayerCardsPosition()
                         giveDiscardToPlayer(discardIndex: index) // Call generic method
-                        players[0].resetSelectedFlags()
-                        updatePlayerHandScore()
+                        (players[0] as! PlayerUser).resetSelectedFlags()
                     }
                 }
             }
@@ -134,6 +132,7 @@ extension GameScene {
         if dealButtonPressed {
             dealButtonPressed = false // Reset the state of the deal button
             startingPlayerIndex = -1 // Reset the starting player (always the user at the beginning of the game)
+            updateScoreLabels() // Reset the score labels
         }
         
         // Update the starting player
@@ -143,11 +142,13 @@ extension GameScene {
             startingPlayerIndex = 0
         }
         
-        // Deal the cards (all players)
+        // Deal the cards (all players still in game)
         for _ in 0...4 {
             for player in players {
-                player.addCard(card: pile.cards[pile.topCard])
-                pile.topCard -= 1
+                if !player.gameLose {
+                    player.addCard(card: pile.cards[pile.topCard])
+                    pile.topCard -= 1
+                }
             }
         }
         
@@ -155,9 +156,6 @@ extension GameScene {
         discard.append(pile.cards[pile.topCard])
         nbDiscardCardsToShow = 1
         pile.topCard -= 1
-        
-        // Update the hand score label
-        updatePlayerHandScore()
         
         // Launch the turn
         turnCounter = 1

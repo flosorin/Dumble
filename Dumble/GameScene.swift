@@ -92,7 +92,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Init with common parameters
         for (index, player) in players.enumerated() {
             playersNameLabelNodes.append(SKLabelNode(text: player.name))
-            playersScoreLabelNodes.append(SKLabelNode(text: "100"))
+            playersScoreLabelNodes.append(SKLabelNode(text: "0"))
             playersNameLabelNodes[index].fontSize = 20
             playersScoreLabelNodes[index].fontSize = 20
             playersNameLabelNodes[index].fontColor = SKColor.white
@@ -113,6 +113,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // All IA
         for nodeIndex in 1...playersScoreLabelNodes.count - 1 {
             playersScoreLabelNodes[nodeIndex].position = CGPoint(x: playersNameLabelNodes[nodeIndex].position.x, y: playersNameLabelNodes[nodeIndex].position.y - playersScoreLabelNodes[nodeIndex].frame.height * 1.5)
+        }
+    }
+    
+    func updateScoreLabels() {
+        for (index, scoreNode) in playersScoreLabelNodes.enumerated() {
+            scoreNode.text = "\(players[index].score)"
         }
     }
     
@@ -139,7 +145,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Called before each frame is rendered
     override func update(_ currentTime: TimeInterval) {
         displayIAHands()
-        displayPlayerCards()
+        displayPlayerUserInfos()
         displayDiscardCards() 
     }
 }

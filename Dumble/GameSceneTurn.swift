@@ -14,13 +14,16 @@ import GameplayKit
 extension GameScene {
     
     func playTurn() {
-        // Update the player index
-        if playerIndex < players.count - 1 {
-            playerIndex += 1
-        } else {
-            playerIndex = 0
-            turnCounter += 1 // If we go back to the first player, one turn has been completed
-        }
+        // Update the player index (also avoid attributing it to a player who lost the game)
+        repeat {
+            if playerIndex < players.count - 1 {
+                playerIndex += 1
+            } else {
+                playerIndex = 0
+                turnCounter += 1 // If we go back to the first player, one turn has been completed
+            }
+        } while players[playerIndex].gameLose
+        
         // Change the color of the name of the current player
         for (index, nameNode) in playersNameLabelNodes.enumerated() {
             if index == playerIndex {
@@ -63,7 +66,50 @@ extension GameScene {
     }
     
     func dumbleManagement() {
-        print("Player \(playerIndex) said dumble") // TO BE REPLACED BY PROPER ANIMATION
-        dealCards()
+        print(players[playerIndex].name + " said dumble") // TO BE REPLACED BY PROPER ANIMATION
+        // Check if the player as the lower score
+        if playerHasLowestHandScore() {
+            for (index, player) in players.enumerated() {
+                if index != playerIndex {
+                    player.updateScore() // All other players add their hand score to their score
+                }
+            }
+        } else {
+            players[playerIndex].updateScore(dumbleFailed: true) // The player adds 25 to its score
+        }
+        // Update score labels
+        updateScoreLabels()
+        // Re-deal the cards if the game is not over
+        if !isGameOver() {
+            dealCards()
+        }
+    }
+    
+    func playerHasLowestHandScore() -> Bool {
+        // Check for lower hand scores
+        for (index, player) in players.enumerated() {
+            if (index != playerIndex) && (player.getHandScore() <= players[playerIndex].getHandScore()) {
+                print(player.name + " has a lower score")
+                return false
+            }
+        }
+        
+        return true
+    }
+    
+    func isGameOver() -> Bool {
+        var nbLost = 0
+        
+        for player in players {
+            if player.gameLose {
+                nbLost += 1
+            }
+        }
+        
+        if nbLost == players.count - 1 {
+            return true
+        }
+        
+        return false
     }
 }
