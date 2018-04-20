@@ -40,6 +40,7 @@ extension GameScene {
         playerHandScoreLabelNode.fontSize = 20
         playerHandScoreLabelNode.fontColor = SKColor.white
         playerHandScoreLabelNode.position = CGPoint(x: frame.midX, y: playerCardsNodes[0].size.height / 2)
+        playerHandScoreLabelNode.isHidden = true
         addChild(playerHandScoreLabelNode)
     }
     
@@ -50,6 +51,7 @@ extension GameScene {
         dumbleButtonLabelNode.fontColor = SKColor.white
         dumbleButtonLabelNode.position = CGPoint(x: frame.width - dumbleButtonLabelNode.frame.width * 0.75, y: playerCardsNodes[0].size.height / 2)
         dumbleButtonLabelNode.name = "dumble"
+        dumbleButtonLabelNode.isHidden = true
         addChild(dumbleButtonLabelNode)
     }
     
@@ -57,13 +59,17 @@ extension GameScene {
         let handScore = players[0].getHandScore()
         // Update the player cards display
         displayPlayerCards()
-        // Update the hand score label
-        playerHandScoreLabelNode.text = "Hand: \(handScore)"
-        // Show or hide the dumble button
-        if (handScore > 9) {
-            dumbleButtonLabelNode.isHidden = true
-        } else {
-            dumbleButtonLabelNode.isHidden = false
+        // Show only if we are currently on game
+        if (startingPlayerIndex != -1) {
+            // Update the hand score label
+            playerHandScoreLabelNode.isHidden = false
+            playerHandScoreLabelNode.text = "Hand: \(handScore)"
+            // Show or hide the dumble button
+            if handScore > 9 {
+                dumbleButtonLabelNode.isHidden = true
+            } else {
+                dumbleButtonLabelNode.isHidden = false
+            }
         }
     }
     

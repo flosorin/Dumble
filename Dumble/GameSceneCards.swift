@@ -125,9 +125,11 @@ extension GameScene {
         // Melt the pile
         pile.melt()
         
-        // Reset players
-        for player in players {
+        // Reset players and show labels
+        for (index, player) in players.enumerated() {
             player.reset(resetAll: dealButtonPressed)
+            playersNameLabelNodes[index].isHidden = false
+            playersScoreLabelNodes[index].isHidden = false
         }
         if dealButtonPressed {
             dealButtonPressed = false // Reset the state of the deal button

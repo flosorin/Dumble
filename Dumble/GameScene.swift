@@ -20,7 +20,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // IA's hands
     var handsIA: [SKSpriteNode] = []
-    var showIAHands = true
+    var showIAHands = false
     
     // Player user view
     // Player cards
@@ -49,7 +49,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var dealButtonPressed = false // Basically tells if we need to reset all (new game started by pressing the deal button) or just cards and dumble flag (cards dealt because dumble has been said)
     
     // Turn counter
-    var turnCounter = 1
+    var turnCounter = 0
+    
+    // TO BE REMOVED
+    var cheatTapsCounter = 0 // 3 taps anywhere to hide / show the IA hands...
     
     override func didMove(to view: SKView) {
         // Init players array
@@ -99,6 +102,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             playersScoreLabelNodes[index].fontSize = 20
             playersNameLabelNodes[index].fontColor = SKColor.white
             playersScoreLabelNodes[index].fontColor = SKColor.white
+            playersNameLabelNodes[index].isHidden = true
+            playersScoreLabelNodes[index].isHidden = true
             addChild(playersNameLabelNodes[index])
             addChild(playersScoreLabelNodes[index])
         }
@@ -129,8 +134,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for touch in touches {
             let location = touch.location(in: self)
             let node : SKNode = self.atPoint(location)
-            if let nodeName = node.name { // Check if the node is a player card
-                if let cardNode = playerCardsList[nodeName] {
+            if let nodeName = node.name {
+                if let cardNode = playerCardsList[nodeName] { // Check if the node is a player card
                     playerCardsTouchManager(cardNode: cardNode)
                 } else if nodeName == "pile" { // Check if the node is the pile
                     pileTouchManager()
@@ -141,6 +146,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     dealCards()
                 } else if nodeName == "dumble" { // Check if the node is the user dumble button
                     dumbleButtonTouchManager()
+                }
+            } else { // TO BE REMOVED
+                if cheatTapsCounter == 2 {
+                    showIAHands = !showIAHands
+                    cheatTapsCounter = 0
+                } else {
+                    cheatTapsCounter += 1
                 }
             }
         }
