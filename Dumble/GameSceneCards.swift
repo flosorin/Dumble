@@ -88,7 +88,7 @@ extension GameScene {
                 // Recover the true index
                 if let nodeIndexes = cardNodesIndexes[nbDiscardCardsToShow] {
                     if let nodeIndex = nodeIndexes.index(of: discardCardsNodes.index(of: cardNode)!) {
-                        let index = (discard.count - 1) - nodeIndex
+                        let index = discard.count - nbDiscardCardsToShow + nodeIndex
                         resetPlayerCardsPosition()
                         giveDiscardToPlayer(discardIndex: index) // Call generic method
                         (players[0] as! PlayerUser).resetSelectedFlags()
@@ -122,7 +122,8 @@ extension GameScene {
     }
     
     func dealCards() {
-        // Melt the pile
+        // Re-create a pile and melt it
+        pile = Deck()
         pile.melt()
         
         // Reset players and show labels
