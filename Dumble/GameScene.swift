@@ -28,6 +28,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var playerCardsList: [String : SKSpriteNode] = [:]
     // Player hand score
     var playerHandScoreLabelNode: SKLabelNode!
+    // TO BE MODIFIED: temporary "dumble" button
+    var dumbleButtonLabelNode: SKLabelNode!
     
     // Pile and discard
     var pile = Deck()
@@ -42,7 +44,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Card node indexes to display
     let cardNodesIndexes: [Int: [Int]] = [0: [], 1: [2], 2: [1, 2], 3: [1, 2, 3], 4: [0, 1, 2, 3], 5: [0, 1, 2, 3, 4]]
     
-    // TO BE REMOVED: temporary "deal" button
+    // TO BE MODIFIED: temporary "deal" button
     var dealButtonLabelNode: SKLabelNode!
     var dealButtonPressed = false // Basically tells if we need to reset all (new game started by pressing the deal button) or just cards and dumble flag (cards dealt because dumble has been said)
     
@@ -102,8 +104,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         // Configure the specific position
         // Player user
-        playersNameLabelNodes[0].position = CGPoint(x: playerCardsNodes[0].size.width, y: playerCardsNodes[0].size.height / 2)
-        playersScoreLabelNodes[0].position = CGPoint(x: frame.midX, y: playerCardsNodes[0].size.height / 2)
+        playersNameLabelNodes[0].position = CGPoint(x: frame.width * 0.15, y: playerCardsNodes[0].size.height / 2)
+        playersScoreLabelNodes[0].position = CGPoint(x: frame.width * 0.3, y: playerCardsNodes[0].size.height / 2)
         // IA #1
         playersNameLabelNodes[1].position = CGPoint(x: frame.width * 0.1, y: frame.height * 0.82)
         // IA #2
@@ -137,6 +139,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 } else if nodeName == "deal" { // Check if the node is the deal button
                     dealButtonPressed = true
                     dealCards()
+                } else if nodeName == "dumble" { // Check if the node is the user dumble button
+                    dumbleButtonTouchManager()
                 }
             }
         }

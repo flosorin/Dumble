@@ -16,6 +16,7 @@ extension GameScene {
     func createPlayerDisplay() {
         createPlayerHand()
         createPlayerHandScoreLabel()
+        createPlayerDumbleButton()
     }
     
     func createPlayerHand() {
@@ -38,15 +39,32 @@ extension GameScene {
         playerHandScoreLabelNode = SKLabelNode(text: "Hand: 0")
         playerHandScoreLabelNode.fontSize = 20
         playerHandScoreLabelNode.fontColor = SKColor.white
-        playerHandScoreLabelNode.position = CGPoint(x: frame.width - playerCardsNodes[0].size.width, y: playerCardsNodes[0].size.height / 2)
+        playerHandScoreLabelNode.position = CGPoint(x: frame.midX, y: playerCardsNodes[0].size.height / 2)
         addChild(playerHandScoreLabelNode)
     }
     
+    func createPlayerDumbleButton() {
+        // TO BE REPLACED BY REAL BUTTON
+        dumbleButtonLabelNode = SKLabelNode(text: "DUMBLE!")
+        dumbleButtonLabelNode.fontSize = 20
+        dumbleButtonLabelNode.fontColor = SKColor.white
+        dumbleButtonLabelNode.position = CGPoint(x: frame.width - dumbleButtonLabelNode.frame.width * 0.75, y: playerCardsNodes[0].size.height / 2)
+        dumbleButtonLabelNode.name = "dumble"
+        addChild(dumbleButtonLabelNode)
+    }
+    
     func displayPlayerUserInfos() {
+        let handScore = players[0].getHandScore()
         // Update the player cards display
         displayPlayerCards()
         // Update the hand score label
-        playerHandScoreLabelNode.text = "Hand: \(players[0].getHandScore())"
+        playerHandScoreLabelNode.text = "Hand: \(handScore)"
+        // Show or hide the dumble button
+        if (handScore > 9) {
+            dumbleButtonLabelNode.isHidden = true
+        } else {
+            dumbleButtonLabelNode.isHidden = false
+        }
     }
     
     func displayPlayerCards() {
@@ -86,6 +104,17 @@ extension GameScene {
                     }
                 }
             }
+        }
+    }
+    
+    func dumbleButtonTouchManager() {
+        // Firstly, check if this is the user turn
+        if playerIndex == 0 {
+            // Reset specific elements
+            resetPlayerCardsPosition()
+            (players[0] as! PlayerUser).resetSelectedFlags()
+            // Call generic method
+            dumbleManagement()
         }
     }
     
