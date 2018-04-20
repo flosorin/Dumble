@@ -15,7 +15,7 @@ extension GameScene {
     
     func playTurn() {
         // Update the player index
-        if (playerIndex < players.count - 1) {
+        if playerIndex < players.count - 1 {
             playerIndex += 1
         } else {
             playerIndex = 0
@@ -23,14 +23,14 @@ extension GameScene {
         }
         // Change the color of the name of the current player
         for (index, nameNode) in playersNameLabelNodes.enumerated() {
-            if (index == playerIndex) {
+            if index == playerIndex {
                 nameNode.fontColor = SKColor.red
             } else {
                 nameNode.fontColor = SKColor.white
             }
         }
         // Check if an IA has to play
-        if (playerIndex > 0) {
+        if playerIndex > 0 {
             // Construct the list of available cards
             var cardsAvailable : [Card] = []
             for index in (discard.count - nbDiscardCardsToShow)...(discard.count - 1) {
@@ -51,17 +51,19 @@ extension GameScene {
     }
     
     func getOtherPlayersNbCard() -> [Int] {
-        var otherPlayersNbCard : [Int] = []
+        var otherPlayersNbCard: [Int] = []
+        
         for (index, player) in players.enumerated() {
-            if (index != playerIndex) {
+            if index != playerIndex {
                 otherPlayersNbCard.append(player.cards.count)
             }
         }
+        
         return otherPlayersNbCard
     }
     
     func dumbleManagement() {
-        print("Player \(playerIndex) said dumble")
+        print("Player \(playerIndex) said dumble") // TO BE REPLACED BY PROPER ANIMATION
         dealCards()
     }
 }

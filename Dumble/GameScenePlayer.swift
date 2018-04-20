@@ -59,12 +59,12 @@ extension GameScene {
         }
     }
     
-    func playerCardsTouchManager (cardNode: SKSpriteNode) {
+    func playerCardsTouchManager(cardNode: SKSpriteNode) {
         if let nodeIndexes = cardNodesIndexes[players[0].cards.count] {
             if let nodeIndex = nodeIndexes.index(of: playerCardsNodes.index(of: cardNode)!) {
                 // If the card is in its standard position, check if we can select it
-                if (cardNode.position.y == 1.5 * playerCardsNodes[0].size.height) {
-                    if ((players[0] as! PlayerUser).isCardSelectable(index: nodeIndex)) {
+                if cardNode.position.y == 1.5 * playerCardsNodes[0].size.height {
+                    if (players[0] as! PlayerUser).isCardSelectable(index: nodeIndex) {
                         // Make the card goes up to indicate that it is selected
                         cardNode.position.y += playerCardsNodes[0].size.height / 2
                         players[0].cards[nodeIndex].isSelected = true
@@ -74,7 +74,7 @@ extension GameScene {
                     cardNode.position.y -= playerCardsNodes[0].size.height / 2
                     players[0].cards[nodeIndex].isSelected = false
                     // Reset player selected flags if there is one or less card(s) selected
-                    if (players[0].nbCardsSelected() <= 1) {
+                    if players[0].nbCardsSelected() <= 1 {
                         players[0].resetSelectedFlags()
                     }
                 }

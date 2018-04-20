@@ -14,16 +14,16 @@ import GameplayKit
 extension GameScene {
     
     func createIAHands() {
-        handsIA.append(createHandNode(angle : CGFloat(-Double.pi / 2), position : CGPoint(x: 0, y: frame.height * 5 / 8)))
-        handsIA.append(createHandNode(angle : CGFloat(Double.pi), position : CGPoint(x: frame.width / 2, y: frame.height)))
-        handsIA.append(createHandNode(angle : CGFloat(Double.pi / 2), position : CGPoint(x: frame.width, y: frame.height * 5 / 8)))
+        handsIA.append(createHandNode(angle: CGFloat(-Double.pi / 2), position: CGPoint(x: 0, y: frame.height * 5 / 8)))
+        handsIA.append(createHandNode(angle: CGFloat(Double.pi), position: CGPoint(x: frame.width / 2, y: frame.height)))
+        handsIA.append(createHandNode(angle: CGFloat(Double.pi / 2), position: CGPoint(x: frame.width, y: frame.height * 5 / 8)))
         
         for hand in handsIA {
             addChild(hand)
         }
     }
     
-    func createHandNode(angle : CGFloat, position : CGPoint) -> SKSpriteNode {
+    func createHandNode(angle: CGFloat, position: CGPoint) -> SKSpriteNode {
         // Middle card
         let card3 = createCardNode(cardTexture: backTexture, cardPosition: position)
         card3.name = "card3"

@@ -29,7 +29,7 @@ extension GameScene {
         }
     }
     
-    func createCardNode(cardTexture : SKTexture, cardPosition : CGPoint, angle : CGFloat = 0.0, depthPosition : CGFloat = 0.0, cardAnchor: CGPoint = CGPoint(x: 0.5, y: 0.5)) -> SKSpriteNode {
+    func createCardNode(cardTexture: SKTexture, cardPosition: CGPoint, angle: CGFloat = 0.0, depthPosition: CGFloat = 0.0, cardAnchor: CGPoint = CGPoint(x: 0.5, y: 0.5)) -> SKSpriteNode {
         // Create the base of a card
         let card = SKSpriteNode(texture: cardTexture)
         card.anchorPoint = cardAnchor
@@ -51,9 +51,9 @@ extension GameScene {
     
     func pileTouchManager() {
         // Firstly, check if this is the user turn
-        if (playerIndex == 0) {
+        if playerIndex == 0 {
             // Then, check if the interaction is legit
-            if ((players[0] as! PlayerUser).isSwitchAllowed()) {
+            if (players[0] as! PlayerUser).isSwitchAllowed() {
                 resetPlayerCardsPosition()
                 givePileTopToPlayer() // Call generic method
                 players[0].resetSelectedFlags()
@@ -83,9 +83,9 @@ extension GameScene {
     
     func discardTouchManager (cardNode: SKSpriteNode) {
         // Firstly, check if this is the user turn
-        if (playerIndex == 0) {
+        if playerIndex == 0 {
             // Check if the interaction is legit
-            if ((players[0] as! PlayerUser).isSwitchAllowed()) {
+            if (players[0] as! PlayerUser).isSwitchAllowed() {
                 // Recover the true index
                 if let nodeIndexes = cardNodesIndexes[nbDiscardCardsToShow] {
                     if let nodeIndex = nodeIndexes.index(of: discardCardsNodes.index(of: cardNode)!) {
@@ -129,15 +129,15 @@ extension GameScene {
         
         // Reset players
         for player in players {
-            player.reset(resetScore: dealButtonPressed)
+            player.reset(resetAll: dealButtonPressed)
         }
-        if (dealButtonPressed) {
+        if dealButtonPressed {
             dealButtonPressed = false // Reset the state of the deal button
             startingPlayerIndex = -1 // Reset the starting player (always the user at the beginning of the game)
         }
         
         // Update the starting player
-        if (startingPlayerIndex < players.count - 1) {
+        if startingPlayerIndex < players.count - 1 {
             startingPlayerIndex += 1
         } else {
             startingPlayerIndex = 0

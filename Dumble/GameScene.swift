@@ -12,39 +12,39 @@ import GameplayKit
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Players
-    var players : [Player] = []
+    var players: [Player] = []
     var startingPlayerIndex = -1 // Tells which player starts (-1 because dealCards will increase it)
     var playerIndex = 0 // Tells which player has to play
-    var playersNameLabelNodes : [SKLabelNode] = []
-    var playersScoreLabelNodes : [SKLabelNode] = []
+    var playersNameLabelNodes: [SKLabelNode] = []
+    var playersScoreLabelNodes: [SKLabelNode] = []
     
     // IA's hands
-    var handsIA : [SKSpriteNode] = []
+    var handsIA: [SKSpriteNode] = []
     var showIAHands = true
     
     // Player user view
     // Player cards
-    var playerCardsNodes : [SKSpriteNode] = []
-    var playerCardsList : [String : SKSpriteNode] = [:]
+    var playerCardsNodes: [SKSpriteNode] = []
+    var playerCardsList: [String : SKSpriteNode] = [:]
     // Player hand score
-    var playerHandScoreLabelNode : SKLabelNode!
+    var playerHandScoreLabelNode: SKLabelNode!
     
     // Pile and discard
     var pile = Deck()
-    var discard : [Card] = []
-    var discardCardsNodes : [SKSpriteNode] = []
-    var discardCardsList : [String : SKSpriteNode] = [:]
+    var discard: [Card] = []
+    var discardCardsNodes: [SKSpriteNode] = []
+    var discardCardsList: [String: SKSpriteNode] = [:]
     var nbDiscardCardsToShow = 0
     
     // Texture for the back of a card
     let backTexture = SKTexture(imageNamed: "back")
     
     // Card node indexes to display
-    let cardNodesIndexes : [Int : [Int]] = [0 : [], 1 : [2], 2 : [1, 2], 3 : [1, 2, 3], 4 : [0, 1, 2, 3], 5 : [0, 1, 2, 3, 4]]
+    let cardNodesIndexes: [Int: [Int]] = [0: [], 1: [2], 2: [1, 2], 3: [1, 2, 3], 4: [0, 1, 2, 3], 5: [0, 1, 2, 3, 4]]
     
     // TO BE REMOVED: temporary "deal" button
-    var dealButtonLabelNode : SKLabelNode!
-    var dealButtonPressed = false // Basically tells if we need to reset the scores (new game started by pressing the deal button) or keep it (cards dealt because dumble has been said)
+    var dealButtonLabelNode: SKLabelNode!
+    var dealButtonPressed = false // Basically tells if we need to reset all (new game started by pressing the deal button) or just cards and dumble flag (cards dealt because dumble has been said)
     
     // Turn counter
     var turnCounter = 1
@@ -106,13 +106,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         playersScoreLabelNodes[0].position = CGPoint(x: frame.midX, y: playerCardsNodes[0].size.height / 2)
         // IA #1
         playersNameLabelNodes[1].position = CGPoint(x: frame.width * 0.1, y: frame.height * 0.82)
-        playersScoreLabelNodes[1].position = CGPoint(x: playersNameLabelNodes[1].position.x, y: playersNameLabelNodes[1].position.y - playersScoreLabelNodes[1].frame.height * 1.5)
         // IA #2
         playersNameLabelNodes[2].position = CGPoint(x: frame.width * 0.85, y: frame.maxY - playersNameLabelNodes[2].frame.height * 1.5)
-        playersScoreLabelNodes[2].position = CGPoint(x: playersNameLabelNodes[2].position.x, y: playersNameLabelNodes[2].position.y - playersScoreLabelNodes[2].frame.height * 1.5)
         // IA #3
         playersNameLabelNodes[3].position = CGPoint(x: frame.width * 0.9, y: frame.height * 0.78)
-        playersScoreLabelNodes[3].position = CGPoint(x: playersNameLabelNodes[3].position.x, y: playersNameLabelNodes[3].position.y - playersScoreLabelNodes[3].frame.height * 1.5)
+        // All IA
+        for nodeIndex in 1...playersScoreLabelNodes.count - 1 {
+            playersScoreLabelNodes[nodeIndex].position = CGPoint(x: playersNameLabelNodes[nodeIndex].position.x, y: playersNameLabelNodes[nodeIndex].position.y - playersScoreLabelNodes[nodeIndex].frame.height * 1.5)
+        }
     }
     
     // Touch management
