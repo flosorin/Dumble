@@ -67,8 +67,12 @@ extension GameScene {
     
     func dumbleManagement() {
         print(players[playerIndex].name + " said dumble") // TO BE REPLACED BY PROPER ANIMATION
-        resetPlayerCardsPosition() // Just in case the user add time to interact
-        showIAHands = true // Show the cards of the IA
+        isUserInteractionEnabled = false
+        // Reset user specific elements
+        resetPlayerCardsPosition()
+        (players[0] as! PlayerUser).resetSelectedFlags()
+        // Show the cards of the IA
+        showIAHands = true
         // Check if the player as the lower score
         if playerHasLowestHandScore() {
             for (index, player) in players.enumerated() {

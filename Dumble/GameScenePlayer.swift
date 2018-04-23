@@ -115,9 +115,6 @@ extension GameScene {
     func dumbleButtonTouchManager() {
         // Firstly, check if this is the user turn
         if playerIndex == 0 {
-            // Reset specific elements
-            resetPlayerCardsPosition()
-            (players[0] as! PlayerUser).resetSelectedFlags()
             // Call generic method
             dumbleManagement()
         }

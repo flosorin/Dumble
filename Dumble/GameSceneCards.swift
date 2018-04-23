@@ -63,6 +63,9 @@ extension GameScene {
     }
     
     func dealCards() {
+        // Disable user interactions while dealing
+        isUserInteractionEnabled = false
+        
         // Update the display
         isDealingComplete = false
         updateDisplay()
@@ -117,7 +120,10 @@ extension GameScene {
                 // Launch the turn
                 self.turnCounter = 1
                 self.playerIndex = self.startingPlayerIndex - 1 // Because playTurn starts by increasing the playerIndex
-            
+                
+                // Enable user interactions
+                self.isUserInteractionEnabled = true
+                
                 self.playTurn() // Play the next player turn in main thread
             }
         }
