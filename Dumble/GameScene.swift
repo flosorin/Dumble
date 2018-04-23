@@ -37,12 +37,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var discardCardsNodes: [SKSpriteNode] = []
     var discardCardsList: [String: SKSpriteNode] = [:]
     var nbDiscardCardsToShow = 0
+    var isCardGiven = false
+    var isDealingComplete = false
     
     // Texture for the back of a card
     let backTexture = SKTexture(imageNamed: "back")
     
     // Card node indexes to display
-    let cardNodesIndexes = [[], [2], [1, 2], [1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3, 4]]    
+    let cardNodesIndexes = [[], [2], [1, 2], [1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3, 4]]
+    
+    // Cards animation according to the current player
+    var pileAnimations: [SKAction] = [] // [SKAction.moveBy(x: 0.0, y: - frame.height * 0.5, duration: 1.0), SKAction.moveBy(x: 0.0, y: 100.0, duration: 1.0)]
     
     // TO BE MODIFIED: temporary "deal" button
     var dealButtonLabelNode: SKLabelNode!
@@ -67,6 +72,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Init players name and score
         createPlayersDisplay()
         
+        // Cards animations
+        createCardsAnimation()
+        
         // Pile
         createPileNode()
         
@@ -80,6 +88,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         dealButtonLabelNode.position = CGPoint(x: dealButtonLabelNode.frame.width * 0.75, y: frame.maxY - dealButtonLabelNode.frame.height * 1.5)
         dealButtonLabelNode.name = "deal"
         addChild(dealButtonLabelNode)
+        
+        // Update the display
+        updateDisplay()
     }
     
     func createPlayers() {
@@ -150,6 +161,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             } else { // TO BE REMOVED
                 if cheatTapsCounter == 2 {
                     showIAHands = !showIAHands
+                    updateDisplay()
                     cheatTapsCounter = 0
                 } else {
                     cheatTapsCounter += 1
@@ -160,8 +172,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Called before each frame is rendered
     override func update(_ currentTime: TimeInterval) {
-        displayIAHands()
-        displayPlayerUserInfos()
-        displayDiscardCards() 
+        
+    }
+    
+    // Update the display
+    func updateDisplay() {
+        self.displayIAHands()
+        self.displayPlayerUserInfos()
+        self.displayDiscardCards()
     }
 }

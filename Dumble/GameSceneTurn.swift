@@ -67,6 +67,7 @@ extension GameScene {
     
     func dumbleManagement() {
         print(players[playerIndex].name + " said dumble") // TO BE REPLACED BY PROPER ANIMATION
+        resetPlayerCardsPosition() // Just in case the user add time to interact
         showIAHands = true // Show the cards of the IA
         // Check if the player as the lower score
         if playerHasLowestHandScore() {
@@ -78,10 +79,14 @@ extension GameScene {
         } else {
             players[playerIndex].updateScore(dumbleFailed: true) // The player adds 25 to its score
         }
+        updateDisplay()
         // Wait two seconds for the user to see the animations
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
             // Update score labels
             self.updateScoreLabels()
+            // Empty the discard
+            self.discard.removeAll()
+            self.nbDiscardCardsToShow = 0
             // Re-deal the cards if the game is not over
             if !self.isGameOver() {
                 self.showIAHands = false // First, re-hide the IA cards
