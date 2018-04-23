@@ -12,17 +12,22 @@ import GameplayKit
 
 // Define all methods related to cards management
 extension GameScene {
-    
-    func createCardsAnimation() {
-        // Create animation according to the player
-        let animationDuration = 0.25
-        pileAnimations.append(SKAction.moveBy(x: 0.0, y: -frame.height * 0.4, duration: animationDuration))
-        pileAnimations.append(SKAction.moveBy(x: -frame.width * 0.4, y: 0.0, duration: animationDuration))
-        pileAnimations.append(SKAction.moveBy(x: 0.0, y: frame.height * 0.25, duration: animationDuration))
-        pileAnimations.append(SKAction.moveBy(x: frame.width * 0.4, y: 0.0, duration: animationDuration))
+    // Create pile animations according to the player
+    func createPileAnimations() {
+        let animationsDuration = 0.5
+        pileAnimations.append(SKAction.moveBy(x: 0.0, y: -frame.height * 0.4, duration: animationsDuration))
+        pileAnimations.append(SKAction.moveBy(x: -frame.width * 0.4, y: 0.0, duration: animationsDuration))
+        pileAnimations.append(SKAction.moveBy(x: 0.0, y: frame.height * 0.25, duration: animationsDuration))
+        pileAnimations.append(SKAction.moveBy(x: frame.width * 0.4, y: 0.0, duration: animationsDuration))
         // Add a effect to move slower at the beginning and the end
-        for action in pileAnimations {
-            action.timingMode = .easeInEaseOut
+        for animation in pileAnimations {
+            animation.timingMode = .easeInEaseOut
+        }
+    }
+    // Reconfigure the pile animation duration to match the usage
+    func reconfigurePileAnimationsDuration(duration: TimeInterval) {
+        for animation in pileAnimations {
+            animation.duration = duration
         }
     }
     
@@ -92,6 +97,10 @@ extension GameScene {
         } else {
             startingPlayerIndex = 0
         }
+        
+        // Reconfigure the animations duration to speed up the dealing
+        reconfigurePileAnimationsDuration(duration: 0.15)
+        
         // All the dealing is done in background to be able to wait for the animations to end
         DispatchQueue.global(qos: .background).async {
             // Deal the cards (all players still in game), starting with the starting player
@@ -112,6 +121,9 @@ extension GameScene {
                 self.discard.append(self.pile.cards[self.pile.topCard])
                 self.nbDiscardCardsToShow = 1
                 self.pile.topCard -= 1
+                
+                // Reconfigure the animations duration for the game
+                self.reconfigurePileAnimationsDuration(duration: 0.5)
                 
                 // Update the display
                 self.isDealingComplete = true
@@ -146,9 +158,7 @@ extension GameScene {
         if playerIndex == 0 {
             // Then, check if the interaction is legit
             if (players[0] as! PlayerUser).isSwitchAllowed() {
-                resetPlayerCardsPosition()
                 givePileTopToPlayer() // Call generic method
-                (players[0] as! PlayerUser).resetSelectedFlags()
             }
         }
     }
@@ -182,11 +192,20 @@ extension GameScene {
     
     func animatePileTopToPlayer(index: Int) {
         let cardNode = createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: frame.width / 2, y: frame.height * 5 / 8))
+        animateGeneric(cardNode: cardNode, animation: pileAnimations[index])
+    }
+    
+    func animateGeneric(cardNode: SKSpriteNode, animation: SKAction) {
         addChild(cardNode)
         isCardGiven = false
-        cardNode.run(self.pileAnimations[index], completion: {
+        cardNode.run(animation, completion: {
             // Remove the temporary node
             self.removeChildren(in: [cardNode])
+            // Update the display
+            if self.playerIndex == 0 {
+                self.resetPlayerCardsPosition()
+                (self.players[0] as! PlayerUser).resetSelectedFlags()
+            }
             self.updateDisplay()
             // Tell that the animation has been completed
             self.isCardGiven = true
@@ -202,23 +221,62 @@ extension GameScene {
                 let nodeIndexes = cardNodesIndexes[nbDiscardCardsToShow]
                 if let nodeIndex = nodeIndexes.index(of: discardCardsNodes.index(of: cardNode)!) {
                     let index = discard.count - nbDiscardCardsToShow + nodeIndex
-                    resetPlayerCardsPosition()
                     giveDiscardToPlayer(discardIndex: index) // Call generic method
-                    (players[0] as! PlayerUser).resetSelectedFlags()
                 }
             }
         }
     }
     
     func giveDiscardToPlayer(discardIndex: Int) {
+        // Recover the discard node index
+        let discardNodeIndex = cardNodesIndexes[nbDiscardCardsToShow][discardIndex - self.discard.count + self.nbDiscardCardsToShow]
         // The player recover the selected discard card
         switchPlayerCards(cardToPick: discard[discardIndex].clone())
         // The card is removed from the discard
         discard.remove(at: discardIndex)
-        // Update the display
-        updateDisplay()
-        // Tells the next player that it is its turn
-        playTurn()
+        // Animate and wait for the end of the animation before playing next player turn
+        DispatchQueue.global(qos: .background).async {
+            self.animateDiscardToPlayer(discardNodeIndex: discardNodeIndex) // Launch the animation
+            while(!self.isCardGiven) {} // Wait for the end of it
+            DispatchQueue.main.async {
+                self.playTurn() // Play the next player turn
+            }
+        }
+    }
+    
+    func animateDiscardToPlayer(discardNodeIndex: Int) {
+        let cardNode = discardCardsNodes[discardNodeIndex].copy() as! SKSpriteNode
+        let animation = getDiscardAnimation(discardNodeIndex: discardNodeIndex, reversed: true)
+        discardCardsNodes[discardNodeIndex].isHidden = true
+        animateGeneric(cardNode: cardNode, animation: animation)
+    }
+    
+    func animatePlayerToDiscard() {
+        
+    }
+    
+    // Get the discard animation according to the current player, the node and the way needed
+    // reversed = true: from discard to player
+    // reversed = false: from player to discard
+    func getDiscardAnimation(discardNodeIndex: Int, reversed: Bool) -> SKAction {
+        let moveCoordinates = getDiscardMove(discardNodeIndex: discardNodeIndex)
+        let way: CGFloat = reversed ? -1.0 : 1.0
+        let animation = SKAction.moveBy(x: way * moveCoordinates.x, y: way * moveCoordinates.y, duration: 0.5)
+        animation.timingMode = .easeInEaseOut
+        return animation
+    }
+    
+    func getDiscardMove(discardNodeIndex: Int) -> CGPoint {
+        let dx, dy: CGFloat
+        if playerIndex == 0 {
+            dx = discardCardsNodes[discardNodeIndex].position.x - playerCardsNodes[2].position.x
+            dy = discardCardsNodes[discardNodeIndex].position.y - playerCardsNodes[2].position.y
+        }  else {
+            dx = discardCardsNodes[discardNodeIndex].position.x - handsIA[playerIndex - 1].position.x
+            dy = discardCardsNodes[discardNodeIndex].position.y - handsIA[playerIndex - 1].position.y
+        }
+
+        return CGPoint(x: dx, y: dy)
     }
     
     func switchPlayerCards(cardToPick: Card) {

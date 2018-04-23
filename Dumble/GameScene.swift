@@ -47,7 +47,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let cardNodesIndexes = [[], [2], [1, 2], [1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3, 4]]
     
     // Cards animation according to the current player
-    var pileAnimations: [SKAction] = [] // [SKAction.moveBy(x: 0.0, y: - frame.height * 0.5, duration: 1.0), SKAction.moveBy(x: 0.0, y: 100.0, duration: 1.0)]
+    var pileAnimations: [SKAction] = [] // Pile to player
     
     // TO BE MODIFIED: temporary "deal" button
     var dealButtonLabelNode: SKLabelNode!
@@ -73,7 +73,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         createPlayersDisplay()
         
         // Cards animations
-        createCardsAnimation()
+        createPileAnimations()
         
         // Pile
         createPileNode()
