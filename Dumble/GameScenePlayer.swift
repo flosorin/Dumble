@@ -17,6 +17,7 @@ extension GameScene {
         createPlayerHand()
         createPlayerHandScoreLabel()
         createPlayerDumbleButton()
+        createPlayerDumbleSaidLabel()
     }
     
     func createPlayerHand() {
@@ -51,6 +52,16 @@ extension GameScene {
         dumbleButtonLabelNode.position = CGPoint(x: frame.width - dumbleButtonLabelNode.frame.width * 0.75, y: playerCardsNodes[0].size.height / 2)
         dumbleButtonLabelNode.name = "dumble"
         addChild(dumbleButtonLabelNode)
+    }
+    
+    func createPlayerDumbleSaidLabel() {
+        dumbleSaidLabelNode = SKLabelNode(text: "DUMBLE")
+        dumbleSaidLabelNode.fontSize = 20
+        dumbleSaidLabelNode.fontColor = SKColor.white
+        dumbleSaidLabelNode.position = CGPoint(x: playerCardsNodes[2].position.x, y: playerCardsNodes[2].position.y + playerCardsNodes[2].size.height / 2 + dumbleSaidLabelNode.frame.height)
+        dumbleSaidLabelNode.name = "dumble"
+        dumbleSaidLabelNode.isHidden = true
+        addChild(dumbleSaidLabelNode)
     }
     
     func displayPlayerUserInfos() {

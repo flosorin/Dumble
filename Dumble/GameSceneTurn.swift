@@ -66,13 +66,13 @@ extension GameScene {
     }
     
     func dumbleManagement() {
-        print(players[playerIndex].name + " said dumble") // TO BE REPLACED BY PROPER ANIMATION
         isUserInteractionEnabled = false
         // Reset user specific elements
         resetPlayerCardsPosition()
         (players[0] as! PlayerUser).resetSelectedFlags()
-        // Show the cards of the IA
+        // Show the cards of the IA and the dumble said label for the current player
         showIAHands = true
+        displayDumbleSaidLabel(hide: false)
         // Check if the player as the lower score
         if playerHasLowestHandScore() {
             for (index, player) in players.enumerated() {
@@ -84,8 +84,8 @@ extension GameScene {
             players[playerIndex].updateScore(dumbleFailed: true) // The player adds 25 to its score
         }
         updateDisplay()
-        // Wait two seconds for the user to see the animations
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
+        // Wait 3 seconds for the user to see the animations
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3), execute: {
             // Update score labels
             self.updateScoreLabels()
             // Empty the discard
@@ -93,17 +93,26 @@ extension GameScene {
             self.nbDiscardCardsToShow = 0
             // Re-deal the cards if the game is not over
             if !self.isGameOver() {
-                self.showIAHands = false // First, re-hide the IA cards
+                // First, re-hide the IA cards and the dumble said label
+                self.showIAHands = false
+                self.displayDumbleSaidLabel(hide: true)
                 self.dealCards()
             }
         })
     }
     
+    func displayDumbleSaidLabel(hide: Bool) {
+        if playerIndex == 0 {
+            dumbleSaidLabelNode.isHidden = hide
+        } else {
+            handsIA[playerIndex - 1].childNode(withName: "DumbleSaid")?.isHidden = hide
+        }
+    }
+    
     func playerHasLowestHandScore() -> Bool {
         // Check for lower hand scores
         for (index, player) in players.enumerated() {
-            if (index != playerIndex) && (player.getHandScore() <= players[playerIndex].getHandScore()) {
-                print(player.name + " has a lower score")
+            if (index != playerIndex) && (!player.gameLose) && (player.getHandScore() <= players[playerIndex].getHandScore()) {
                 return false
             }
         }

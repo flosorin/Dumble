@@ -30,6 +30,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var playerHandScoreLabelNode: SKLabelNode!
     // TO BE MODIFIED: temporary "dumble" button
     var dumbleButtonLabelNode: SKLabelNode!
+    // Dumble said label node
+    var dumbleSaidLabelNode: SKLabelNode!
     
     // Pile and discard
     var pile = Deck()

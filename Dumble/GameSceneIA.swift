@@ -56,6 +56,14 @@ extension GameScene {
         handNode.addChild(card3)
         handNode.addChild(card4)
         handNode.addChild(card5)
+        // Create the dumble said label node
+        let dumbleSaidLabelNode = SKLabelNode(text: "DUMBLE")
+        dumbleSaidLabelNode.name = "DumbleSaid"
+        dumbleSaidLabelNode.fontSize = 20
+        dumbleSaidLabelNode.fontColor = SKColor.white
+        dumbleSaidLabelNode.position = CGPoint(x: card3.position.x, y: card3.position.y + card3.frame.height / 2 + dumbleSaidLabelNode.frame.height)
+        dumbleSaidLabelNode.isHidden = true
+        handNode.addChild(dumbleSaidLabelNode)
         // Rotate the hand
         handNode.zRotation = angle
         return handNode
