@@ -150,6 +150,7 @@ extension GameScene {
             // Animate and wait for the end of the animation
             animatePileTopToPlayer(index: index)
             while(!isCardGiven) {}
+            updateDisplay()
         }
     }
     
@@ -164,28 +165,37 @@ extension GameScene {
     }
     
     func givePileTopToPlayer() {
+        nbDiscardCardsToShow = players[playerIndex].nbCardsSelected()
         DispatchQueue.global(qos: .background).async {
-            // The player recover the top card of the pile
-            self.switchPlayerCards(cardToPick: self.pile.cards[self.pile.topCard])
-            // Update the pile top card
-            if self.pile.topCard > 0 {
-                self.pile.topCard -= 1
-            } else { // If there is no card left, the discard become the new pile (we just keep the last card(s))
-                // Copy the last cards before removing it to avoid copying it to the pile
-                var discardTmp = self.discard[self.discard.count - self.nbDiscardCardsToShow...self.discard.count - 1]
-                self.discard.removeLast(self.nbDiscardCardsToShow)
-                // Reconstruct the pile
-                self.pile.reconstruct(withCards: self.discard)
-                // Reconstruct the discard
-                self.discard.removeAll()
-                self.discard.append(contentsOf: discardTmp)
-                discardTmp.removeAll()
-            }
             // Animate and wait for the end of the animation before playing next player turn
-            self.animatePileTopToPlayer(index: self.playerIndex) // Launch the animation
-            while(!self.isCardGiven) {} // Wait for the end of it
+            self.animatePileTopToPlayer(index: self.playerIndex)
+            self.animatePlayerToDiscard()
+            while (!self.isCardGiven) && (self.nbCardsDiscarded < self.nbDiscardCardsToShow) {}
             DispatchQueue.main.async {
-                self.playTurn() // Play the next player turn
+                // The player recover the top card of the pile
+                self.switchPlayerCards(cardToPick: self.pile.cards[self.pile.topCard])
+                // Update the pile top card
+                if self.pile.topCard > 0 {
+                    self.pile.topCard -= 1
+                } else { // If there is no card left, the discard become the new pile (we just keep the last card(s))
+                    // Copy the last cards before removing it to avoid copying it to the pile
+                    var discardTmp = self.discard[self.discard.count - self.nbDiscardCardsToShow...self.discard.count - 1]
+                    self.discard.removeLast(self.nbDiscardCardsToShow)
+                    // Reconstruct the pile
+                    self.pile.reconstruct(withCards: self.discard)
+                    // Reconstruct the discard
+                    self.discard.removeAll()
+                    self.discard.append(contentsOf: discardTmp)
+                    discardTmp.removeAll()
+                }
+                // Update the display
+                if self.playerIndex == 0 {
+                    self.resetPlayerCardsPosition()
+                    (self.players[0] as! PlayerUser).resetSelectedFlags()
+                }
+                self.updateDisplay()
+                // Play the next player turn
+                self.playTurn()
             }
         }
     }
@@ -201,12 +211,6 @@ extension GameScene {
         cardNode.run(animation, completion: {
             // Remove the temporary node
             cardNode.removeFromParent()
-            // Update the display
-            if self.playerIndex == 0 {
-                self.resetPlayerCardsPosition()
-                (self.players[0] as! PlayerUser).resetSelectedFlags()
-            }
-            self.updateDisplay()
             // Tell that the animation has been completed
             self.isCardGiven = true
         })
@@ -228,18 +232,27 @@ extension GameScene {
     }
     
     func giveDiscardToPlayer(discardIndex: Int) {
+        nbDiscardCardsToShow = players[playerIndex].nbCardsSelected()
         DispatchQueue.global(qos: .background).async {
             // Recover the discard node index
             let discardNodeIndex = self.cardNodesIndexes[self.nbDiscardCardsToShow][discardIndex - self.discard.count + self.nbDiscardCardsToShow]
-            // The player recover the selected discard card
-            self.switchPlayerCards(cardToPick: self.discard[discardIndex].clone())
-            // The card is removed from the discard
-            self.discard.remove(at: discardIndex)
             // Animate and wait for the end of the animation before playing next player turn
-            self.animateDiscardToPlayer(discardNodeIndex: discardNodeIndex) // Launch the animation
-            while(!self.isCardGiven) {} // Wait for the end of it
+            self.animateDiscardToPlayer(discardNodeIndex: discardNodeIndex)
+            self.animatePlayerToDiscard()
+            while (!self.isCardGiven) && (self.nbCardsDiscarded < self.nbDiscardCardsToShow) {}
             DispatchQueue.main.async {
-                self.playTurn() // Play the next player turn
+                // The player recover the selected discard card
+                self.switchPlayerCards(cardToPick: self.discard[discardIndex].clone())
+                // The card is removed from the discard
+                self.discard.remove(at: discardIndex)
+                // Update the display
+                if self.playerIndex == 0 {
+                    self.resetPlayerCardsPosition()
+                    (self.players[0] as! PlayerUser).resetSelectedFlags()
+                }
+                self.updateDisplay()
+                // Play the next player turn
+                self.playTurn()
             }
         }
     }
@@ -316,9 +329,6 @@ extension GameScene {
                 discard.last?.isSelected = false
             }
         }
-        nbDiscardCardsToShow = players[playerIndex].nbCardsSelected()
-        animatePlayerToDiscard() // Animate the discard
-        while nbCardsDiscarded < nbDiscardCardsToShow {} // Wait for the animation to end
         players[playerIndex].removeSelectedCards()
         // The player recover the card he wanted to pick
         players[playerIndex].addCard(card: cardToPick)
