@@ -39,6 +39,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var discardCardsNodes: [SKSpriteNode] = []
     var discardCardsList: [String: SKSpriteNode] = [:]
     var nbDiscardCardsToShow = 0
+    var nbCardsDiscarded = 0
     var isCardGiven = false
     var isDealingComplete = false
     

@@ -164,24 +164,24 @@ extension GameScene {
     }
     
     func givePileTopToPlayer() {
-        // The player recover the top card of the pile
-        switchPlayerCards(cardToPick: pile.cards[pile.topCard])
-        // Update the pile top card
-        if pile.topCard > 0 {
-            pile.topCard -= 1
-        } else { // If there is no card left, the discard become the new pile (we just keep the last card(s))
-            // Copy the last cards before removing it to avoid copying it to the pile
-            var discardTmp = discard[discard.count - nbDiscardCardsToShow...discard.count - 1]
-            discard.removeLast(nbDiscardCardsToShow)
-            // Reconstruct the pile
-            pile.reconstruct(withCards: discard)
-            // Reconstruct the discard
-            discard.removeAll()
-            discard.append(contentsOf: discardTmp)
-            discardTmp.removeAll()
-        }
-        // Animate and wait for the end of the animation before playing next player turn
         DispatchQueue.global(qos: .background).async {
+            // The player recover the top card of the pile
+            self.switchPlayerCards(cardToPick: self.pile.cards[self.pile.topCard])
+            // Update the pile top card
+            if self.pile.topCard > 0 {
+                self.pile.topCard -= 1
+            } else { // If there is no card left, the discard become the new pile (we just keep the last card(s))
+                // Copy the last cards before removing it to avoid copying it to the pile
+                var discardTmp = self.discard[self.discard.count - self.nbDiscardCardsToShow...self.discard.count - 1]
+                self.discard.removeLast(self.nbDiscardCardsToShow)
+                // Reconstruct the pile
+                self.pile.reconstruct(withCards: self.discard)
+                // Reconstruct the discard
+                self.discard.removeAll()
+                self.discard.append(contentsOf: discardTmp)
+                discardTmp.removeAll()
+            }
+            // Animate and wait for the end of the animation before playing next player turn
             self.animatePileTopToPlayer(index: self.playerIndex) // Launch the animation
             while(!self.isCardGiven) {} // Wait for the end of it
             DispatchQueue.main.async {
@@ -228,14 +228,14 @@ extension GameScene {
     }
     
     func giveDiscardToPlayer(discardIndex: Int) {
-        // Recover the discard node index
-        let discardNodeIndex = cardNodesIndexes[nbDiscardCardsToShow][discardIndex - self.discard.count + self.nbDiscardCardsToShow]
-        // The player recover the selected discard card
-        switchPlayerCards(cardToPick: discard[discardIndex].clone())
-        // The card is removed from the discard
-        discard.remove(at: discardIndex)
-        // Animate and wait for the end of the animation before playing next player turn
         DispatchQueue.global(qos: .background).async {
+            // Recover the discard node index
+            let discardNodeIndex = self.cardNodesIndexes[self.nbDiscardCardsToShow][discardIndex - self.discard.count + self.nbDiscardCardsToShow]
+            // The player recover the selected discard card
+            self.switchPlayerCards(cardToPick: self.discard[discardIndex].clone())
+            // The card is removed from the discard
+            self.discard.remove(at: discardIndex)
+            // Animate and wait for the end of the animation before playing next player turn
             self.animateDiscardToPlayer(discardNodeIndex: discardNodeIndex) // Launch the animation
             while(!self.isCardGiven) {} // Wait for the end of it
             DispatchQueue.main.async {
@@ -252,25 +252,54 @@ extension GameScene {
     }
     
     func animatePlayerToDiscard() {
-        
+        let discardNodeIndexes = cardNodesIndexes[nbDiscardCardsToShow]
+        let playerNodeIndexes = cardNodesIndexes[players[playerIndex].cards.count]
+        var nodeIndex = 0
+        var cardNode = SKSpriteNode(texture: backTexture)
+        if playerIndex > 0 {
+            cardNode = createCardNode(cardTexture: backTexture, cardPosition: handsIA[playerIndex - 1].position)
+        }
+        var animation = getDiscardAnimation(discardNodeIndex: discardNodeIndexes[nodeIndex], reversed: false)
+        self.nbCardsDiscarded = 0
+        for (index, card) in players[playerIndex].cards.enumerated() {
+            if card.isSelected {
+                if playerIndex == 0 {
+                    let playerCardNodeIndex = playerNodeIndexes[index]
+                    cardNode = playerCardsNodes[playerCardNodeIndex].copy() as! SKSpriteNode
+                    playerCardsNodes[playerCardNodeIndex].isHidden = true
+                    animation = getDiscardAnimation(discardNodeIndex: discardNodeIndexes[nodeIndex], reversed: false, playerCardNodeIndex: playerCardNodeIndex)
+                } else {
+                    animation = getDiscardAnimation(discardNodeIndex: discardNodeIndexes[nodeIndex], reversed: false)
+                }
+                let cardNodeCopy = cardNode.copy() as! SKSpriteNode
+                addChild(cardNodeCopy)
+                cardNodeCopy.run(animation, completion: {
+                    // Remove the temporary node
+                    cardNodeCopy.removeFromParent()
+                    // Update the number of discarded cards
+                    self.nbCardsDiscarded += 1
+                })
+                nodeIndex += 1
+            }
+        }
     }
     
     // Get the discard animation according to the current player, the node and the way needed
     // reversed = true: from discard to player
     // reversed = false: from player to discard
-    func getDiscardAnimation(discardNodeIndex: Int, reversed: Bool) -> SKAction {
-        let moveCoordinates = getDiscardMove(discardNodeIndex: discardNodeIndex)
+    func getDiscardAnimation(discardNodeIndex: Int, reversed: Bool, playerCardNodeIndex: Int = 2) -> SKAction {
+        let moveCoordinates = getDiscardMove(discardNodeIndex: discardNodeIndex, playerCardNodeIndex: playerCardNodeIndex)
         let way: CGFloat = reversed ? -1.0 : 1.0
         let animation = SKAction.moveBy(x: way * moveCoordinates.x, y: way * moveCoordinates.y, duration: 0.5)
         animation.timingMode = .easeInEaseOut
         return animation
     }
     
-    func getDiscardMove(discardNodeIndex: Int) -> CGPoint {
+    func getDiscardMove(discardNodeIndex: Int, playerCardNodeIndex: Int = 2) -> CGPoint {
         let dx, dy: CGFloat
         if playerIndex == 0 {
-            dx = discardCardsNodes[discardNodeIndex].position.x - playerCardsNodes[2].position.x
-            dy = discardCardsNodes[discardNodeIndex].position.y - playerCardsNodes[2].position.y
+            dx = discardCardsNodes[discardNodeIndex].position.x - playerCardsNodes[playerCardNodeIndex].position.x
+            dy = discardCardsNodes[discardNodeIndex].position.y - playerCardsNodes[playerCardNodeIndex].position.y
         }  else {
             dx = discardCardsNodes[discardNodeIndex].position.x - handsIA[playerIndex - 1].position.x
             dy = discardCardsNodes[discardNodeIndex].position.y - handsIA[playerIndex - 1].position.y
@@ -288,6 +317,8 @@ extension GameScene {
             }
         }
         nbDiscardCardsToShow = players[playerIndex].nbCardsSelected()
+        animatePlayerToDiscard() // Animate the discard
+        while nbCardsDiscarded < nbDiscardCardsToShow {} // Wait for the animation to end
         players[playerIndex].removeSelectedCards()
         // The player recover the card he wanted to pick
         players[playerIndex].addCard(card: cardToPick)

@@ -59,7 +59,6 @@ extension GameScene {
         dumbleSaidLabelNode.fontSize = 20
         dumbleSaidLabelNode.fontColor = SKColor.white
         dumbleSaidLabelNode.position = CGPoint(x: playerCardsNodes[2].position.x, y: playerCardsNodes[2].position.y + playerCardsNodes[2].size.height / 2 + dumbleSaidLabelNode.frame.height)
-        dumbleSaidLabelNode.name = "dumble"
         dumbleSaidLabelNode.isHidden = true
         addChild(dumbleSaidLabelNode)
     }
