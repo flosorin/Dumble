@@ -200,7 +200,7 @@ extension GameScene {
         isCardGiven = false
         cardNode.run(animation, completion: {
             // Remove the temporary node
-            self.removeChildren(in: [cardNode])
+            cardNode.removeFromParent()
             // Update the display
             if self.playerIndex == 0 {
                 self.resetPlayerCardsPosition()
