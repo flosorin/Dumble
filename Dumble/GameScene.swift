@@ -42,6 +42,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var nbCardsDiscarded = 0
     var isCardGiven = false
     var isDealingComplete = false
+    var isWaitingForRedealing = false
     
     // Texture for the back of a card
     let backTexture = SKTexture(imageNamed: "back")
@@ -149,17 +150,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let location = touch.location(in: self)
             let node : SKNode = self.atPoint(location)
             if let nodeName = node.name {
-                if let cardNode = playerCardsList[nodeName] { // Check if the node is a player card
-                    playerCardsTouchManager(cardNode: cardNode)
+                if !isWaitingForRedealing {
+                    if let cardNode = playerCardsList[nodeName] { // Check if the node is a player card
+                        playerCardsTouchManager(cardNode: cardNode)
+                    } else if nodeName == "pile" { // Check if the node is the pile
+                        pileTouchManager()
+                    } else if let cardNode = discardCardsList[nodeName] { // Check if the node is a discard card
+                        discardTouchManager(cardNode: cardNode)
+                    } else if nodeName == "deal" { // Check if the node is the deal button
+                        dealButtonPressed = true
+                        dealCards()
+                    } else if nodeName == "dumble" { // Check if the node is the user dumble button
+                        dumbleButtonTouchManager()
+                    }
                 } else if nodeName == "pile" { // Check if the node is the pile
-                    pileTouchManager()
-                } else if let cardNode = discardCardsList[nodeName] { // Check if the node is a discard card
-                    discardTouchManager(cardNode: cardNode)
-                } else if nodeName == "deal" { // Check if the node is the deal button
-                    dealButtonPressed = true
-                    dealCards()
-                } else if nodeName == "dumble" { // Check if the node is the user dumble button
-                    dumbleButtonTouchManager()
+                    isWaitingForRedealing = false
+                    isUserInteractionEnabled = false
                 }
             } else { // TO BE REMOVED
                 if cheatTapsCounter == 2 {

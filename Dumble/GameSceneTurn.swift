@@ -88,22 +88,28 @@ extension GameScene {
             displayDumbleSaidLabel(hide: false, playerIndex: counterPlayerIndex, text: "NOPE!")
         }
         updateDisplay()
-        // Wait 3 seconds for the user to see the animations
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3), execute: {
-            // Update score labels
-            self.updateScoreLabels()
-            // Empty the discard
-            self.discard.removeAll()
-            self.nbDiscardCardsToShow = 0
-            // Re-deal the cards if the game is not over
-            if !self.isGameOver() {
-                // First, re-hide the IA cards and the dumble said label
-                self.showIAHands = false
-                self.displayDumbleSaidLabel(hide: true, playerIndex: self.playerIndex)
-                self.displayDumbleSaidLabel(hide: true, playerIndex: counterPlayerIndex)
-                self.dealCards()
+        // Wait for the user to claim for redealing
+        isWaitingForRedealing = true
+        isUserInteractionEnabled = true
+        DispatchQueue.global(qos: .background).async {
+            while self.isWaitingForRedealing {}
+            // Go back to the main thread
+            DispatchQueue.main.async {
+                // Update score labels
+                self.updateScoreLabels()
+                // Empty the discard
+                self.discard.removeAll()
+                self.nbDiscardCardsToShow = 0
+                // Re-deal the cards if the game is not over
+                if !self.isGameOver() {
+                    // First, re-hide the IA cards and the dumble said label
+                    self.showIAHands = false
+                    self.displayDumbleSaidLabel(hide: true, playerIndex: self.playerIndex)
+                    self.displayDumbleSaidLabel(hide: true, playerIndex: counterPlayerIndex)
+                    self.dealCards()
+                }
             }
-        })
+        }
     }
     
     func displayDumbleSaidLabel(hide: Bool, playerIndex: Int, text: String = "DUMBLE") {

@@ -232,10 +232,11 @@ extension GameScene {
     }
     
     func giveDiscardToPlayer(discardIndex: Int) {
+        // Recover the discard node index before updating the number of discard cards to show
+        let discardNodeIndex = self.cardNodesIndexes[self.nbDiscardCardsToShow][discardIndex - self.discard.count + self.nbDiscardCardsToShow]
+        // Update the number of discard cards to show (for player to discard animation)
         nbDiscardCardsToShow = players[playerIndex].nbCardsSelected()
         DispatchQueue.global(qos: .background).async {
-            // Recover the discard node index
-            let discardNodeIndex = self.cardNodesIndexes[self.nbDiscardCardsToShow][discardIndex - self.discard.count + self.nbDiscardCardsToShow]
             // Animate and wait for the end of the animation before playing next player turn
             self.animateDiscardToPlayer(discardNodeIndex: discardNodeIndex)
             self.animatePlayerToDiscard()
