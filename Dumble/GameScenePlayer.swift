@@ -68,7 +68,7 @@ extension GameScene {
         // Update the player cards display
         displayPlayerCards()
         // Show only if we are currently on game
-        if (isDealingComplete) {
+        if (isDealingComplete && !players[0].gameLose) {
             // Update the hand score label
             playerHandScoreLabelNode.isHidden = false
             playerHandScoreLabelNode.text = "Hand: \(handScore)"

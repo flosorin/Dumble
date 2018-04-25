@@ -57,7 +57,7 @@ extension GameScene {
         var otherPlayersNbCard: [Int] = []
         
         for (index, player) in players.enumerated() {
-            if index != playerIndex {
+            if index != playerIndex && !player.gameLose {
                 otherPlayersNbCard.append(player.cards.count)
             }
         }

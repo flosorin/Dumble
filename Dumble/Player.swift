@@ -191,7 +191,7 @@ class PlayerIA: Player {
         }
         // Then, check the number of turn (if the hand score is more than 4)
         if handScore > 4 {
-            let nbTurnAllowed = 4 + 9 - handScore
+            let nbTurnAllowed = 6 + 9 - handScore
             if nbTurn > nbTurnAllowed {
                 return false
             }
@@ -204,7 +204,7 @@ class PlayerIA: Player {
             }
         }
         // If at least one other player has two cards, do not attempt to dumble above seven
-        if let _ = otherPlayersNbCards.index(of: 1) {
+        if let _ = otherPlayersNbCards.index(of: 2) {
             if handScore > 7 {
                 return false
             }
