@@ -47,7 +47,6 @@ extension GameScene {
     func createPlayerDumbleButton() {
         dumbleButton = createButton(title: "DUMBLE", textSize: 20)
         dumbleButton.position = CGPoint(x: frame.width - dumbleButton.frame.width * 0.75, y: playerCardsNodes[0].size.height / 2)
-        dumbleButton.name = "dumble"
         addChild(dumbleButton)
     }
     

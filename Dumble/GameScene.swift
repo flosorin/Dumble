@@ -59,10 +59,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Turn counter
     var turnCounter = 0
     
-    // TO BE REMOVED
-    var cheatTapsCounter = 0 // 3 taps anywhere to hide / show the IA hands...
+    // PopUps
+    var popUp: SKShapeNode!
+    var isPopUpPresent = false
     
     override func didMove(to view: SKView) {
+        
+        // Settings button
+        createSettingsButton()
         
         // Init players array
         createPlayers()
@@ -90,6 +94,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Tells that we can deal cards by touching the pile
         isWaitingForRedealing = true
+    }
+    
+    func createSettingsButton() {
+        let settingsButton = SKSpriteNode(imageNamed: "settings")
+        settingsButton.position = CGPoint(x: frame.maxX - settingsButton.frame.width, y: frame.maxY - settingsButton.frame.height)
+        settingsButton.name = "settings"
+        addChild(settingsButton)
     }
     
     func createPlayers() {
@@ -145,27 +156,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let location = touch.location(in: self)
             let node : SKNode = self.atPoint(location)
             if let nodeName = node.name {
-                if !isWaitingForRedealing {
-                    if let cardNode = playerCardsList[nodeName] { // Check if the node is a player card
-                        playerCardsTouchManager(cardNode: cardNode)
-                    } else if nodeName == "pile" { // Check if the node is the pile
-                        pileTouchManager()
-                    } else if let cardNode = discardCardsList[nodeName] { // Check if the node is a discard card
-                        discardTouchManager(cardNode: cardNode)
-                    } else if nodeName == "deal" { // Check if the node is the deal button
-                        dealButtonPressed = true
-                        dealCards()
-                    } else if nodeName == "dumble" { // Check if the node is the user dumble button
-                        dumbleButtonTouchManager()
+                if !isPopUpPresent {
+                    if !isWaitingForRedealing {
+                        if let cardNode = playerCardsList[nodeName] { // Check if the node is a player card
+                            playerCardsTouchManager(cardNode: cardNode)
+                        } else if nodeName == "pile" { // Check if the node is the pile
+                            pileTouchManager()
+                        } else if let cardNode = discardCardsList[nodeName] { // Check if the node is a discard card
+                            discardTouchManager(cardNode: cardNode)
+                        } else if nodeName == "deal" { // Check if the node is the deal button
+                            dealButtonPressed = true
+                            dealCards()
+                        } else if nodeName == "DUMBLE" { // Check if the node is the user dumble button
+                            dumbleButtonTouchManager()
+                        }
+                    } else if nodeName == "pile" { // Pile node is used to deal cards when waiting for re-dealing (after dumble or at the beginning of a new game)
+                        isWaitingForRedealing = false
+                        isUserInteractionEnabled = false
+                        // If this is the beginning of a new game, simply reset all and deal the cards
+                        if !isDealingComplete {
+                            dealButtonPressed = true
+                            dealCards()
+                        }
                     }
-                } else if nodeName == "pile" { // Pile node is used to deal cards when waiting for re-dealing (after dumble or at the beginning of a new game)
-                    isWaitingForRedealing = false
-                    isUserInteractionEnabled = false
-                    // If this is the beginning of a new game, simply reset all and deal the cards
-                    if !isDealingComplete {
-                        dealButtonPressed = true
-                        dealCards()
-                    }
+                    popUpTouchManagement(nodeName: nodeName) // PopUp showing management
+                } else {
+                    popUpTouchManagement(nodeName: nodeName) // PopUp buttons management
                 }
             }
         }
