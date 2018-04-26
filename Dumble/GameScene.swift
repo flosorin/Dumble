@@ -122,11 +122,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         playersNameLabelNodes[0].position = CGPoint(x: frame.width * 0.15, y: playerCardsNodes[0].size.height / 2)
         playersScoreLabelNodes[0].position = CGPoint(x: frame.width * 0.3, y: playerCardsNodes[0].size.height / 2)
         // IA #1
-        playersNameLabelNodes[1].position = CGPoint(x: frame.width * 0.1, y: frame.height * 0.82)
+        playersNameLabelNodes[1].position = CGPoint(x: frame.width * 0.1, y: frame.height * 0.8)
         // IA #2
-        playersNameLabelNodes[2].position = CGPoint(x: frame.width * 0.85, y: frame.maxY - playersNameLabelNodes[2].frame.height * 1.5)
+        playersNameLabelNodes[2].position = CGPoint(x: frame.width * 0.15, y: frame.maxY - playersNameLabelNodes[2].frame.height * 1.5)
         // IA #3
-        playersNameLabelNodes[3].position = CGPoint(x: frame.width * 0.9, y: frame.height * 0.78)
+        playersNameLabelNodes[3].position = CGPoint(x: frame.width * 0.9, y: frame.height * 0.8)
         // All IA
         for nodeIndex in 1...playersScoreLabelNodes.count - 1 {
             playersScoreLabelNodes[nodeIndex].position = CGPoint(x: playersNameLabelNodes[nodeIndex].position.x, y: playersNameLabelNodes[nodeIndex].position.y - playersScoreLabelNodes[nodeIndex].frame.height * 1.5)
