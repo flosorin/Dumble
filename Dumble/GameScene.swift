@@ -28,8 +28,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var playerCardsList: [String : SKSpriteNode] = [:]
     // Player hand score
     var playerHandScoreLabelNode: SKLabelNode!
-    // TO BE MODIFIED: temporary "dumble" button
-    var dumbleButtonLabelNode: SKLabelNode!
+    // "dumble" button
+    var dumbleButton: SKShapeNode!
     // Dumble said label node
     var dumbleSaidLabelNode: SKLabelNode!
     
@@ -53,9 +53,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Cards animation according to the current player
     var pileAnimations: [SKAction] = [] // Pile to player
     
-    // TO BE MODIFIED: temporary "deal" button
-    var dealButtonLabelNode: SKLabelNode!
-    var dealButtonPressed = false // Basically tells if we need to reset all (new game started by pressing the deal button) or just cards and dumble flag (cards dealt because dumble has been said)
+    // Basically tells if we need to reset all (new game started by pressing the deal button) or just cards and dumble flag (cards dealt because dumble has been said)
+    var dealButtonPressed = false
     
     // Turn counter
     var turnCounter = 0
@@ -64,6 +63,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var cheatTapsCounter = 0 // 3 taps anywhere to hide / show the IA hands...
     
     override func didMove(to view: SKView) {
+        
         // Init players array
         createPlayers()
         
@@ -85,16 +85,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Discard
         createDiscardNodes()
         
-        // TO BE REMOVED: temporary "deal" button
-        dealButtonLabelNode = SKLabelNode(text: "DEAL")
-        dealButtonLabelNode.fontSize = 30
-        dealButtonLabelNode.fontColor = SKColor.white
-        dealButtonLabelNode.position = CGPoint(x: dealButtonLabelNode.frame.width * 0.75, y: frame.maxY - dealButtonLabelNode.frame.height * 1.5)
-        dealButtonLabelNode.name = "deal"
-        addChild(dealButtonLabelNode)
-        
         // Update the display
         updateDisplay()
+        
+        // Tells that we can deal cards by touching the pile
+        isWaitingForRedealing = true
     }
     
     func createPlayers() {
@@ -163,17 +158,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     } else if nodeName == "dumble" { // Check if the node is the user dumble button
                         dumbleButtonTouchManager()
                     }
-                } else if nodeName == "pile" { // Check if the node is the pile
+                } else if nodeName == "pile" { // Pile node is used to deal cards when waiting for re-dealing (after dumble or at the beginning of a new game)
                     isWaitingForRedealing = false
                     isUserInteractionEnabled = false
-                }
-            } else { // TO BE REMOVED
-                if cheatTapsCounter == 2 {
-                    showIAHands = !showIAHands
-                    updateDisplay()
-                    cheatTapsCounter = 0
-                } else {
-                    cheatTapsCounter += 1
+                    // If this is the beginning of a new game, simply reset all and deal the cards
+                    if !isDealingComplete {
+                        dealButtonPressed = true
+                        dealCards()
+                    }
                 }
             }
         }

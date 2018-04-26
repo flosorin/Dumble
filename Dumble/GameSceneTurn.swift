@@ -102,22 +102,28 @@ extension GameScene {
                 self.nbDiscardCardsToShow = 0
                 // Re-deal the cards if the game is not over
                 if !self.isGameOver() {
+                    if self.players[0].gameLose {
+                        self.userGameOverManagement()
+                    }
                     // First, re-hide the IA cards and the dumble said label
                     self.showIAHands = false
                     self.displayDumbleSaidLabel(hide: true, playerIndex: self.playerIndex)
                     self.displayDumbleSaidLabel(hide: true, playerIndex: counterPlayerIndex)
                     self.dealCards()
+                } else {
+                    self.gameOverManagement()
                 }
             }
         }
     }
     
     func displayDumbleSaidLabel(hide: Bool, playerIndex: Int, text: String = "DUMBLE") {
+        let textCompleted = text + " (\(players[playerIndex].getHandScore()))"
         if playerIndex == 0 {
-            dumbleSaidLabelNode.text = text
+            dumbleSaidLabelNode.text = textCompleted
             dumbleSaidLabelNode.isHidden = hide
         } else {
-            (handsIA[playerIndex - 1].childNode(withName: "DumbleSaid") as! SKLabelNode).text = text
+            (handsIA[playerIndex - 1].childNode(withName: "DumbleSaid") as! SKLabelNode).text = textCompleted
             handsIA[playerIndex - 1].childNode(withName: "DumbleSaid")?.isHidden = hide
         }
     }
@@ -147,5 +153,13 @@ extension GameScene {
         }
         
         return false
+    }
+    
+    func userGameOverManagement() {
+        // TO BE COMPLETED
+    }
+    
+    func gameOverManagement() {
+        // TO BE COMPLETED
     }
 }

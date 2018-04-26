@@ -45,13 +45,10 @@ extension GameScene {
     }
     
     func createPlayerDumbleButton() {
-        // TO BE REPLACED BY REAL BUTTON
-        dumbleButtonLabelNode = SKLabelNode(text: "DUMBLE!")
-        dumbleButtonLabelNode.fontSize = 20
-        dumbleButtonLabelNode.fontColor = SKColor.white
-        dumbleButtonLabelNode.position = CGPoint(x: frame.width - dumbleButtonLabelNode.frame.width * 0.75, y: playerCardsNodes[0].size.height / 2)
-        dumbleButtonLabelNode.name = "dumble"
-        addChild(dumbleButtonLabelNode)
+        dumbleButton = createButton(title: "DUMBLE", textSize: 20)
+        dumbleButton.position = CGPoint(x: frame.width - dumbleButton.frame.width * 0.75, y: playerCardsNodes[0].size.height / 2)
+        dumbleButton.name = "dumble"
+        addChild(dumbleButton)
     }
     
     func createPlayerDumbleSaidLabel() {
@@ -74,13 +71,13 @@ extension GameScene {
             playerHandScoreLabelNode.text = "Hand: \(handScore)"
             // Show or hide the dumble button
             if handScore > 9 {
-                dumbleButtonLabelNode.isHidden = true
+                dumbleButton.isHidden = true
             } else {
-                dumbleButtonLabelNode.isHidden = false
+                dumbleButton.isHidden = false
             }
         } else {
             playerHandScoreLabelNode.isHidden = true
-            dumbleButtonLabelNode.isHidden = true
+            dumbleButton.isHidden = true
         }
     }
     
