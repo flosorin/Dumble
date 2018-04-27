@@ -88,9 +88,15 @@ extension GameScene {
             displayDumbleSaidLabel(hide: false, playerIndex: counterPlayerIndex, text: "NOPE!")
         }
         updateDisplay()
+        isUserInteractionEnabled = true
+        // Check if the game is over
+        if isGameOver() {
+            self.gameOverManagement()
+        } else if self.players[0].gameLose {
+            self.userGameOverManagement()
+        }
         // Wait for the user to claim for redealing
         isWaitingForRedealing = true
-        isUserInteractionEnabled = true
         DispatchQueue.global(qos: .background).async {
             while self.isWaitingForRedealing {}
             // Go back to the main thread
@@ -100,19 +106,12 @@ extension GameScene {
                 // Empty the discard
                 self.discard.removeAll()
                 self.nbDiscardCardsToShow = 0
+                // Re-hide the IA cards and the dumble said label
+                self.showIAHands = false
+                self.displayDumbleSaidLabel(hide: true, playerIndex: self.playerIndex)
+                self.displayDumbleSaidLabel(hide: true, playerIndex: counterPlayerIndex)
                 // Re-deal the cards if the game is not over
-                if !self.isGameOver() {
-                    if self.players[0].gameLose {
-                        self.userGameOverManagement()
-                    }
-                    // First, re-hide the IA cards and the dumble said label
-                    self.showIAHands = false
-                    self.displayDumbleSaidLabel(hide: true, playerIndex: self.playerIndex)
-                    self.displayDumbleSaidLabel(hide: true, playerIndex: counterPlayerIndex)
-                    self.dealCards()
-                } else {
-                    self.gameOverManagement()
-                }
+                self.dealCards()
             }
         }
     }
@@ -156,16 +155,15 @@ extension GameScene {
     }
     
     func userGameOverManagement() {
-        popUp = createGameOverPopUp()
+        popUp = createGameOverPopUp(userWon: false)
         addChild(popUp)
         isPopUpPresent = true
         // TO BE COMPLETED
     }
     
     func gameOverManagement() {
-        popUp = createGameOverPopUp(userWon: false)
+        popUp = createGameOverPopUp()
         addChild(popUp)
         isPopUpPresent = true
-        // TO BE COMPLETED
     }
 }

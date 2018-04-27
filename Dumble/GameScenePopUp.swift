@@ -121,18 +121,22 @@ extension GameScene {
             } else if nodeName == "Restart" {
                 dealButtonPressed = true
                 closePopUp()
-                if !players[0].gameLose {
+                if isWaitingForRedealing { // Force re-dealing after dumble
+                    isWaitingForRedealing = false
+                } else if !players[0].gameLose {
                     // Wait for the end of the turn and restart
                     DispatchQueue.global(qos: .background).async {
                         while self.playerIndex != 0 {}
                         DispatchQueue.main.async {
+                            self.discard.removeAll()
+                            self.nbDiscardCardsToShow = 0
                             self.dealCards()
                         }
                     }
                 }
             } else if nodeName == "OK" {
                 closePopUp()
-                // TO BE COMPLETED
+                isWaitingForRedealing = true // Tells that we can touch the pile to relaunch a game
             } else if nodeName == "Watch" {
                 closePopUp()
                 // TO BE COMPLETED
