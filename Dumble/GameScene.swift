@@ -29,7 +29,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Player hand score
     var playerHandScoreLabelNode: SKLabelNode!
     // "dumble" button
-    var dumbleButton: SKShapeNode!
+    var dumbleButton: SKSpriteNode!
     // Dumble said label node
     var dumbleSaidLabelNode: SKLabelNode!
     

@@ -23,14 +23,36 @@ extension GameScene {
         return popUp
     }
     
-    func createGameOverPopUp() -> SKShapeNode {
-        let popUp = createPopUp(title: "Congratulations!", height: frame.height * 0.2)
-        let okButton = createButton(title: "OK", textSize: 25, position: CGPoint(x: frame.midX, y: frame.height * 0.45), customSideWidth: popUp.frame.width * 0.2)
-        popUp.addChild(okButton)
+    func createGameOverPopUp(userWon: Bool = true) -> SKShapeNode {
+        let popUp = createPopUp(title: "Game Over", closeButton: false, height: frame.height * 0.2)
+        let text = SKLabelNode(text: userWon ? "Congratulations!" : "Oh no! =(")
+        text.fontSize = 20
+        text.fontColor = SKColor.white
+        text.horizontalAlignmentMode = .center;
+        text.verticalAlignmentMode = .center
+        popUp.addChild(text)
+        if let titlePositionY = popUp.childNode(withName: "popUpTitle")?.position.y {
+            text.position = CGPoint(x: (text.parent?.frame.midX)!, y: titlePositionY - 1.5 * text.frame.height)
+        }
+        if userWon {
+            let okButton = createButton(title: "OK", customWidth: frame.width * 0.3)
+            popUp.addChild(okButton)
+            okButton.position = CGPoint(x: (okButton.parent?.frame.midX)!, y: text.position.y - okButton.frame.height)
+        } else {
+            let watchButton = createButton(title: "Watch")
+            let skipButton = createButton(title: "Skip", customWidth: watchButton.size.width)
+            watchButton.size.height = skipButton.size.height
+            popUp.addChild(watchButton)
+            popUp.addChild(skipButton)
+            let positionOriginX = (frame.width - popUp.frame.width) / 2
+            watchButton.position = CGPoint(x: positionOriginX + (watchButton.parent?.frame.width)! * 0.25, y: text.position.y - watchButton.frame.height)
+            skipButton.position = CGPoint(x: positionOriginX + (skipButton.parent?.frame.width)! * 0.75, y: text.position.y - skipButton.frame.height)
+        }
+        
         return popUp
     }
     
-    func createPopUp(title: String, height: CGFloat = 0.0) -> SKShapeNode {
+    func createPopUp(title: String, closeButton: Bool = true, height: CGFloat = 0.0) -> SKShapeNode {
         var popUpHeight = frame.height / 2
         if height != 0.0 {
             popUpHeight = height
@@ -51,33 +73,39 @@ extension GameScene {
         popUpTitle.position = CGPoint(x: (popUpTitle.parent?.frame.midX)!, y: (popUpTitle.parent?.frame.maxY)! - popUpTitle.frame.height)
         popUpTitle.name = "popUpTitle"
         // Close button
-        let popUpClose = SKSpriteNode(imageNamed: "close")
-        popUpClose.name = "close"
-        popUpClose.size = resizeHeight(oldSize: popUpClose.size, newHeight: popUpTitle.frame.height)
-        popUpNode.addChild(popUpClose)
-        popUpClose.position = CGPoint(x: (popUpClose.parent?.frame.maxX)! - popUpClose.frame.width, y: (popUpClose.parent?.frame.maxY)! - popUpClose.frame.height)
+        if closeButton {
+            let popUpClose = SKSpriteNode(imageNamed: "close")
+            popUpClose.name = "close"
+            popUpClose.size = resizeHeight(oldSize: popUpClose.size, newHeight: popUpTitle.frame.height)
+            popUpNode.addChild(popUpClose)
+            popUpClose.position = CGPoint(x: (popUpClose.parent?.frame.maxX)! - popUpClose.frame.width, y: (popUpClose.parent?.frame.maxY)! - popUpClose.frame.height)
+        }
+        
         return popUpNode
     }
     
-    func createButton(title: String, textSize: CGFloat = 25, position: CGPoint = CGPoint(x: 0, y: 0), customSideWidth: CGFloat = 0.0) -> SKShapeNode {
+    func createButton(title: String, textSize: CGFloat = 25, position: CGPoint = CGPoint(x: 0, y: 0), customWidth: CGFloat = 0.0) -> SKSpriteNode {
         // Title
         let buttonTitle = SKLabelNode(text: title)
         buttonTitle.fontSize = textSize
         buttonTitle.fontColor = SKColor.white
         buttonTitle.fontName = "HelveticaNeue-Bold"
-        buttonTitle.name = title
         // Button
         var buttonSideWidth = buttonTitle.frame.width * 0.1
-        if customSideWidth != 0.0 {
-            buttonSideWidth = customSideWidth
+        if customWidth != 0.0 {
+            buttonSideWidth = (customWidth - buttonTitle.frame.width) / 2
         }
         let buttonRect = buttonTitle.frame.insetBy(dx: -buttonSideWidth, dy: -buttonTitle.frame.midY)
         let buttonNode = SKShapeNode(rect: buttonRect, cornerRadius: 10)
         buttonNode.position = CGPoint(x: position.x - buttonNode.frame.midX, y: position.y - buttonNode.frame.midY)
-        buttonNode.name = title
         buttonNode.fillColor = UIColor.black
         buttonNode.addChild(buttonTitle)
-        return buttonNode
+        // Return a SKSpriteNode instead of a SKShapeNode
+        let node = SKNode()
+        node.addChild(buttonNode)
+        let nodeToReturn = SKSpriteNode(texture: view?.texture(from: node, crop: node.calculateAccumulatedFrame()))
+        nodeToReturn.name = title
+        return nodeToReturn
     }
     
     func popUpTouchManagement(nodeName: String) {
@@ -90,8 +118,7 @@ extension GameScene {
         } else { // Look for touches in the popup
             if nodeName == "close" {
                 closePopUp()
-            }
-            if nodeName == "Restart" {
+            } else if nodeName == "Restart" {
                 dealButtonPressed = true
                 closePopUp()
                 if !players[0].gameLose {
@@ -103,6 +130,15 @@ extension GameScene {
                         }
                     }
                 }
+            } else if nodeName == "OK" {
+                closePopUp()
+                // TO BE COMPLETED
+            } else if nodeName == "Watch" {
+                closePopUp()
+                // TO BE COMPLETED
+            } else if nodeName == "Skip" {
+                closePopUp()
+                // TO BE COMPLETED
             }
         }
     }

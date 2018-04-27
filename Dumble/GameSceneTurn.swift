@@ -156,10 +156,16 @@ extension GameScene {
     }
     
     func userGameOverManagement() {
+        popUp = createGameOverPopUp()
+        addChild(popUp)
+        isPopUpPresent = true
         // TO BE COMPLETED
     }
     
     func gameOverManagement() {
+        popUp = createGameOverPopUp(userWon: false)
+        addChild(popUp)
+        isPopUpPresent = true
         // TO BE COMPLETED
     }
 }
