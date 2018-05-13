@@ -52,6 +52,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Cards animation according to the current player
     var pileAnimations: [SKAction] = [] // Pile to player
+    var showAnimations = true
     
     // Basically tells if we need to reset all (new game started by pressing the deal button) or just cards and dumble flag (cards dealt because dumble has been said)
     var dealButtonPressed = false

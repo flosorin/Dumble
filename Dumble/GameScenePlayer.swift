@@ -69,10 +69,10 @@ extension GameScene {
             playerHandScoreLabelNode.isHidden = false
             playerHandScoreLabelNode.text = "Hand: \(handScore)"
             // Show or hide the dumble button
-            if handScore > 9 {
-                dumbleButton.isHidden = true
-            } else {
+            if handScore <= 9 && !isWaitingForRedealing {
                 dumbleButton.isHidden = false
+            } else {
+                dumbleButton.isHidden = true
             }
         } else {
             playerHandScoreLabelNode.isHidden = true

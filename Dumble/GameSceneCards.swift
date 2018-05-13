@@ -201,8 +201,12 @@ extension GameScene {
     }
     
     func animatePileTopToPlayer(index: Int) {
-        let cardNode = createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: frame.width / 2, y: frame.height * 5 / 8))
-        animateGeneric(cardNode: cardNode, animation: pileAnimations[index])
+        if showAnimations {
+            let cardNode = createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: frame.width / 2, y: frame.height * 5 / 8))
+            animateGeneric(cardNode: cardNode, animation: pileAnimations[index])
+        } else {
+            isCardGiven = true
+        }
     }
     
     func animateGeneric(cardNode: SKSpriteNode, animation: SKAction) {
@@ -259,42 +263,50 @@ extension GameScene {
     }
     
     func animateDiscardToPlayer(discardNodeIndex: Int) {
-        let cardNode = discardCardsNodes[discardNodeIndex].copy() as! SKSpriteNode
-        let animation = getDiscardAnimation(discardNodeIndex: discardNodeIndex, reversed: true)
-        discardCardsNodes[discardNodeIndex].isHidden = true
-        animateGeneric(cardNode: cardNode, animation: animation)
+        if showAnimations {
+            let cardNode = discardCardsNodes[discardNodeIndex].copy() as! SKSpriteNode
+            let animation = getDiscardAnimation(discardNodeIndex: discardNodeIndex, reversed: true)
+            discardCardsNodes[discardNodeIndex].isHidden = true
+            animateGeneric(cardNode: cardNode, animation: animation)
+        } else {
+            isCardGiven = true
+        }
     }
     
     func animatePlayerToDiscard() {
-        let discardNodeIndexes = cardNodesIndexes[nbDiscardCardsToShow]
-        let playerNodeIndexes = cardNodesIndexes[players[playerIndex].cards.count]
-        var nodeIndex = 0
-        var cardNode = SKSpriteNode(texture: backTexture)
-        if playerIndex > 0 {
-            cardNode = createCardNode(cardTexture: backTexture, cardPosition: handsIA[playerIndex - 1].position)
-        }
-        var animation = getDiscardAnimation(discardNodeIndex: discardNodeIndexes[nodeIndex], reversed: false)
-        self.nbCardsDiscarded = 0
-        for (index, card) in players[playerIndex].cards.enumerated() {
-            if card.isSelected {
-                if playerIndex == 0 {
-                    let playerCardNodeIndex = playerNodeIndexes[index]
-                    cardNode = playerCardsNodes[playerCardNodeIndex].copy() as! SKSpriteNode
-                    playerCardsNodes[playerCardNodeIndex].isHidden = true
-                    animation = getDiscardAnimation(discardNodeIndex: discardNodeIndexes[nodeIndex], reversed: false, playerCardNodeIndex: playerCardNodeIndex)
-                } else {
-                    animation = getDiscardAnimation(discardNodeIndex: discardNodeIndexes[nodeIndex], reversed: false)
-                }
-                let cardNodeCopy = cardNode.copy() as! SKSpriteNode
-                addChild(cardNodeCopy)
-                cardNodeCopy.run(animation, completion: {
-                    // Remove the temporary node
-                    cardNodeCopy.removeFromParent()
-                    // Update the number of discarded cards
-                    self.nbCardsDiscarded += 1
-                })
-                nodeIndex += 1
+        if showAnimations {
+            let discardNodeIndexes = cardNodesIndexes[nbDiscardCardsToShow]
+            let playerNodeIndexes = cardNodesIndexes[players[playerIndex].cards.count]
+            var nodeIndex = 0
+            var cardNode = SKSpriteNode(texture: backTexture)
+            if playerIndex > 0 {
+                cardNode = createCardNode(cardTexture: backTexture, cardPosition: handsIA[playerIndex - 1].position)
             }
+            var animation = getDiscardAnimation(discardNodeIndex: discardNodeIndexes[nodeIndex], reversed: false)
+            self.nbCardsDiscarded = 0
+            for (index, card) in players[playerIndex].cards.enumerated() {
+                if card.isSelected {
+                    if playerIndex == 0 {
+                        let playerCardNodeIndex = playerNodeIndexes[index]
+                        cardNode = playerCardsNodes[playerCardNodeIndex].copy() as! SKSpriteNode
+                        playerCardsNodes[playerCardNodeIndex].isHidden = true
+                        animation = getDiscardAnimation(discardNodeIndex: discardNodeIndexes[nodeIndex], reversed: false, playerCardNodeIndex: playerCardNodeIndex)
+                    } else {
+                        animation = getDiscardAnimation(discardNodeIndex: discardNodeIndexes[nodeIndex], reversed: false)
+                    }
+                    let cardNodeCopy = cardNode.copy() as! SKSpriteNode
+                    addChild(cardNodeCopy)
+                    cardNodeCopy.run(animation, completion: {
+                        // Remove the temporary node
+                        cardNodeCopy.removeFromParent()
+                        // Update the number of discarded cards
+                        self.nbCardsDiscarded += 1
+                    })
+                    nodeIndex += 1
+                }
+            }
+        } else {
+            isCardGiven = true
         }
     }
     

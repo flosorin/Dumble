@@ -34,20 +34,9 @@ extension GameScene {
         if let titlePositionY = popUp.childNode(withName: "popUpTitle")?.position.y {
             text.position = CGPoint(x: (text.parent?.frame.midX)!, y: titlePositionY - 1.5 * text.frame.height)
         }
-        if userWon {
-            let okButton = createButton(title: "OK", customWidth: frame.width * 0.3)
-            popUp.addChild(okButton)
-            okButton.position = CGPoint(x: (okButton.parent?.frame.midX)!, y: text.position.y - okButton.frame.height)
-        } else {
-            let watchButton = createButton(title: "Watch")
-            let skipButton = createButton(title: "Skip", customWidth: watchButton.size.width)
-            watchButton.size.height = skipButton.size.height
-            popUp.addChild(watchButton)
-            popUp.addChild(skipButton)
-            let positionOriginX = (frame.width - popUp.frame.width) / 2
-            watchButton.position = CGPoint(x: positionOriginX + (watchButton.parent?.frame.width)! * 0.25, y: text.position.y - watchButton.frame.height)
-            skipButton.position = CGPoint(x: positionOriginX + (skipButton.parent?.frame.width)! * 0.75, y: text.position.y - skipButton.frame.height)
-        }
+        let okButton = createButton(title: "OK", customWidth: frame.width * 0.3)
+        popUp.addChild(okButton)
+        okButton.position = CGPoint(x: (okButton.parent?.frame.midX)!, y: text.position.y - okButton.frame.height)
         
         return popUp
     }
@@ -121,13 +110,15 @@ extension GameScene {
             } else if nodeName == "Restart" {
                 dealButtonPressed = true
                 closePopUp()
-                if isWaitingForRedealing { // Force re-dealing after dumble
-                    isWaitingForRedealing = false
-                } else if !players[0].gameLose {
-                    // Wait for the end of the turn and restart
-                    DispatchQueue.global(qos: .background).async {
-                        while self.playerIndex != 0 {}
+                // Wait for the end of the turn and restart
+                showAnimations = false
+                DispatchQueue.global(qos: .background).async {
+                    while self.playerIndex != 0 && !self.isWaitingForRedealing {}
+                    if self.isWaitingForRedealing { // Force re-dealing after dumble
+                        self.isWaitingForRedealing = false
+                    } else {
                         DispatchQueue.main.async {
+                            self.showAnimations = true
                             self.discard.removeAll()
                             self.nbDiscardCardsToShow = 0
                             self.dealCards()
@@ -136,13 +127,9 @@ extension GameScene {
                 }
             } else if nodeName == "OK" {
                 closePopUp()
-                isWaitingForRedealing = true // Tells that we can touch the pile to relaunch a game
-            } else if nodeName == "Watch" {
-                closePopUp()
-                // TO BE COMPLETED
-            } else if nodeName == "Skip" {
-                closePopUp()
-                // TO BE COMPLETED
+                // Tells that we can touch the pile to relaunch a game
+                isDealingComplete = false
+                isWaitingForRedealing = false
             }
         }
     }

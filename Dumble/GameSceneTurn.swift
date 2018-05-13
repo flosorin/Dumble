@@ -41,7 +41,8 @@ extension GameScene {
             }
             // Play the IA turn (1 second delay to see it)
             let cardToPickIndex = (self.players[self.playerIndex] as! PlayerIA).playTurn(cardsAvailable: cardsAvailable, nbTurn: turnCounter, otherPlayersNbCards: getOtherPlayersNbCard())
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
+            let delay = showAnimations ? DispatchTime.now() + .seconds(1) : .now()
+            DispatchQueue.main.asyncAfter(deadline: delay, execute: {
                 if  cardToPickIndex >= 0 {
                     self.giveDiscardToPlayer(discardIndex: (self.discard.count - 1) - cardToPickIndex)
                 } else if cardToPickIndex == -1 {
@@ -87,16 +88,17 @@ extension GameScene {
             players[playerIndex].updateScore(dumbleFailed: true) // The player adds 25 to its score
             displayDumbleSaidLabel(hide: false, playerIndex: counterPlayerIndex, text: "NOPE!")
         }
-        updateDisplay()
         isUserInteractionEnabled = true
-        // Check if the game is over
-        if isGameOver() {
-            self.gameOverManagement()
-        } else if self.players[0].gameLose {
-            self.userGameOverManagement()
-        }
-        // Wait for the user to claim for redealing
         isWaitingForRedealing = true
+        updateDisplay()
+        // Check if the game is over
+        if self.players[0].gameLose {
+            self.gameOverManagement(userWon: false)
+        } else if isGameOver() {
+            self.gameOverManagement()
+        }
+        
+        // Wait for the user to claim for redealing
         DispatchQueue.global(qos: .background).async {
             while self.isWaitingForRedealing {}
             // Go back to the main thread
@@ -111,7 +113,11 @@ extension GameScene {
                 self.displayDumbleSaidLabel(hide: true, playerIndex: self.playerIndex)
                 self.displayDumbleSaidLabel(hide: true, playerIndex: counterPlayerIndex)
                 // Re-deal the cards if the game is not over
-                self.dealCards()
+                if self.isDealingComplete {
+                    self.dealCards()
+                } else {
+                    self.isWaitingForRedealing = true
+                }
             }
         }
     }
@@ -153,16 +159,9 @@ extension GameScene {
         
         return false
     }
-    
-    func userGameOverManagement() {
-        popUp = createGameOverPopUp(userWon: false)
-        addChild(popUp)
-        isPopUpPresent = true
-        // TO BE COMPLETED
-    }
-    
-    func gameOverManagement() {
-        popUp = createGameOverPopUp()
+        
+    func gameOverManagement(userWon: Bool = true) {
+        popUp = createGameOverPopUp(userWon: userWon)
         addChild(popUp)
         isPopUpPresent = true
     }
