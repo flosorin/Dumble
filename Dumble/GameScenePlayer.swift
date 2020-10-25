@@ -98,7 +98,7 @@ extension GameScene {
     
     func playerCardsTouchManager(cardNode: SKSpriteNode) {
         let nodeIndexes = cardNodesIndexes[players[0].cards.count]
-        if let nodeIndex = nodeIndexes.index(of: playerCardsNodes.index(of: cardNode)!) {
+        if let nodeIndex = nodeIndexes.firstIndex(of: playerCardsNodes.firstIndex(of: cardNode)!) {
             // If the card is in its standard position, check if we can select it
             if cardNode.position.y == 1.5 * playerCardsNodes[0].size.height {
                 if (players[0] as! PlayerUser).isCardSelectable(index: nodeIndex) {

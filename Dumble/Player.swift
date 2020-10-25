@@ -198,13 +198,13 @@ class PlayerIA: Player {
         }
         // Finally, check the other players cards number (TO BE IMPROVED)
         // If at least one other player has only one card, do not attempt to dumble above five
-        if let _ = otherPlayersNbCards.index(of: 1) {
+        if let _ = otherPlayersNbCards.firstIndex(of: 1) {
             if handScore > 5 {
                 return false
             }
         }
         // If at least one other player has two cards, do not attempt to dumble above seven
-        if let _ = otherPlayersNbCards.index(of: 2) {
+        if let _ = otherPlayersNbCards.firstIndex(of: 2) {
             if handScore > 7 {
                 return false
             }
@@ -291,14 +291,14 @@ class PlayerIA: Player {
     private func checkFollowingInHand() {
         followingHand: for (index, cardInHand) in cards.enumerated() {
             // First, check that we can consider this card without destroying previous plans
-            if let _ = cardsNotToPlayIndex.index(of: index) {
+            if let _ = cardsNotToPlayIndex.firstIndex(of: index) {
                 continue followingHand // Check next card
             }
             let tmpIndexes = checkFollowingCards(newCard: cardInHand)
             if tmpIndexes.count != 0 {
                 // Same check for the following cards
                 for index2 in tmpIndexes {
-                    if let _ = cardsNotToPlayIndex.index(of: index2) {
+                    if let _ = cardsNotToPlayIndex.firstIndex(of: index2) {
                         continue followingHand // Check next card
                     }
                 }
@@ -328,19 +328,19 @@ class PlayerIA: Player {
         // We need at least three following cards so there is no need to do further checking if we do not have enough cards
         if ranksOfSameSuitCards.count >= 2 {
             // Check if the IA owns the 2 upper cards
-            if let index1 = ranksOfSameSuitCards.index(of: newCard.rank.rawValue + 1), let index2 = ranksOfSameSuitCards.index(of: newCard.rank.rawValue + 2) {
+            if let index1 = ranksOfSameSuitCards.firstIndex(of: newCard.rank.rawValue + 1), let index2 = ranksOfSameSuitCards.firstIndex(of: newCard.rank.rawValue + 2) {
                 // Update the list of following cards
                 followingCardsIndex.append(indexOfSameSuitCards[index1])
                 followingCardsIndex.append(indexOfSameSuitCards[index2])
             }
             // Also check if it owns the 2 lower cards (not else to cover all cases)
-            if let index1 = ranksOfSameSuitCards.index(of: newCard.rank.rawValue - 1), let index2 = ranksOfSameSuitCards.index(of: newCard.rank.rawValue - 2) {
+            if let index1 = ranksOfSameSuitCards.firstIndex(of: newCard.rank.rawValue - 1), let index2 = ranksOfSameSuitCards.firstIndex(of: newCard.rank.rawValue - 2) {
                 // Update the list of cards not to play
                 followingCardsIndex.append(indexOfSameSuitCards[index1])
                 followingCardsIndex.append(indexOfSameSuitCards[index2])
             }
             // Finally, if it owns the directly lower and directly upper cards (not else to cover all cases)
-            if let index1 = ranksOfSameSuitCards.index(of: newCard.rank.rawValue - 1), let index2 = ranksOfSameSuitCards.index(of: newCard.rank.rawValue + 1) {
+            if let index1 = ranksOfSameSuitCards.firstIndex(of: newCard.rank.rawValue - 1), let index2 = ranksOfSameSuitCards.firstIndex(of: newCard.rank.rawValue + 1) {
                 // Update the list of cards not to play
                 followingCardsIndex.append(indexOfSameSuitCards[index1])
                 followingCardsIndex.append(indexOfSameSuitCards[index2])
@@ -357,7 +357,7 @@ class PlayerIA: Player {
             if tmpIndexes.count != 0 {
                 // Check that these cards will not be discarded
                 for index2 in tmpIndexes {
-                    if let _ = cardsToPlayIndex.index(of: index2) {
+                    if let _ = cardsToPlayIndex.firstIndex(of: index2) {
                         continue pairingPick // Check next card
                     }
                 }
@@ -377,7 +377,7 @@ class PlayerIA: Player {
             if tmpIndexes.count != 0 {
                 // Check that we can consider these cards without destroying previous plans
                 for index2 in tmpIndexes {
-                    if let _ = cardsNotToPlayIndex.index(of: index2) {
+                    if let _ = cardsNotToPlayIndex.firstIndex(of: index2) {
                         continue pairingHand // Check next card
                     }
                 }
@@ -420,7 +420,7 @@ class PlayerIA: Player {
     private func checkLowestAvailable(cardsAvailable: [Card]) {
         for (index, cardToChoose) in cardsAvailable.enumerated() {
             // First, check that we can consider this card without destroying previous plans
-            if let _ = cardsToPlayIndex.index(of: index) {
+            if let _ = cardsToPlayIndex.firstIndex(of: index) {
                 continue // Check next card
             }
             // Then we check its value
@@ -436,7 +436,7 @@ class PlayerIA: Player {
         // The cards are already sorted so we can iterate in the reverse way
         for index in (0...(cards.count - 1)).reversed() {
             // First, check that we can consider this card without destroying previous plans
-            if let _ = cardsNotToPlayIndex.index(of: index) {
+            if let _ = cardsNotToPlayIndex.firstIndex(of: index) {
                 continue // Check next card
             }
             // If we reach this point, we have found the card

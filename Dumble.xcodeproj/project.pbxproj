@@ -224,20 +224,20 @@
 					178385021F5837E000D16729 = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = 63Y3TYQDLZ;
-						LastSwiftMigration = 0930;
+						LastSwiftMigration = 1210;
 						ProvisioningStyle = Automatic;
 					};
 					1783851C1F5837E100D16729 = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = 63Y3TYQDLZ;
-						LastSwiftMigration = 0930;
+						LastSwiftMigration = 1210;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 178385021F5837E000D16729;
 					};
 					178385271F5837E100D16729 = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = 63Y3TYQDLZ;
-						LastSwiftMigration = 0930;
+						LastSwiftMigration = 1210;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 178385021F5837E000D16729;
 					};
@@ -248,6 +248,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -480,7 +481,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.floso.Dumble;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -494,7 +495,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.floso.Dumble;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -509,7 +510,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.floso.DumbleTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Dumble.app/Dumble";
 			};
 			name = Debug;
@@ -525,7 +526,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.floso.DumbleTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Dumble.app/Dumble";
 			};
 			name = Release;
@@ -540,7 +541,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.floso.DumbleUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = Dumble;
 			};
 			name = Debug;
@@ -555,7 +556,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.floso.DumbleUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = Dumble;
 			};
 			name = Release;

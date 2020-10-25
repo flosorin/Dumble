@@ -227,7 +227,7 @@ extension GameScene {
             if (players[0] as! PlayerUser).isSwitchAllowed() {
                 // Recover the true index
                 let nodeIndexes = cardNodesIndexes[nbDiscardCardsToShow]
-                if let nodeIndex = nodeIndexes.index(of: discardCardsNodes.index(of: cardNode)!) {
+                if let nodeIndex = nodeIndexes.firstIndex(of: discardCardsNodes.firstIndex(of: cardNode)!) {
                     let index = discard.count - nbDiscardCardsToShow + nodeIndex
                     giveDiscardToPlayer(discardIndex: index) // Call generic method
                 }
