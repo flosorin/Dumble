@@ -23,13 +23,13 @@ extension GameScene {
     func createPlayerHand() {
         // Create the first card
         playerCardsNodes.append(createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: 0, y: 0)))
-        playerCardsNodes[0].position = CGPoint(x: playerCardsNodes[0].size.width, y: 1.5 * playerCardsNodes[0].size.height)
+        playerCardsNodes[0].position = CGPoint(x: playerCardsNodes[0].size.width * 1.25, y: 1.5 * playerCardsNodes[0].size.height)
         playerCardsNodes[0].name = "card0"
         playerCardsList.updateValue(playerCardsNodes[0], forKey: "card0")
         addChild(playerCardsNodes[0])
         // Create the others according to the first card position
         for index in 1...4 {
-            playerCardsNodes.append(createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: playerCardsNodes[index - 1].position.x + 1.25 * playerCardsNodes[0].position.x, y: playerCardsNodes[0].position.y)))
+            playerCardsNodes.append(createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: playerCardsNodes[index - 1].position.x + playerCardsNodes[0].position.x, y: playerCardsNodes[0].position.y)))
             playerCardsNodes[index].name = "card\(index)"
             playerCardsList.updateValue(playerCardsNodes[index], forKey: "card\(index)")
             addChild(playerCardsNodes[index])
@@ -46,7 +46,7 @@ extension GameScene {
     
     func createPlayerDumbleButton() {
         dumbleButton = createButton(title: "DUMBLE", textSize: 20)
-        dumbleButton.position = CGPoint(x: frame.width - dumbleButton.frame.width * 0.75, y: playerCardsNodes[0].size.height / 2)
+        dumbleButton.position = CGPoint(x: frame.width - dumbleButton.frame.width * 1.25, y: playerCardsNodes[0].size.height / 2)
         addChild(dumbleButton)
     }
     

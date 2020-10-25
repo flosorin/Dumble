@@ -55,7 +55,7 @@ extension GameScene {
         card.zRotation = angle
         card.zPosition = depthPosition
         // Resize it keeping aspect ratio
-        card.size = resizeWidth(oldSize: card.size, newWidth: frame.width / 7)
+        card.size = resizeWidth(oldSize: card.size, newWidth: frame.width / 7.5)
         return card
     }
     
