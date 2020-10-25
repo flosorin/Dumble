@@ -165,9 +165,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                             pileTouchManager()
                         } else if let cardNode = discardCardsList[nodeName] { // Check if the node is a discard card
                             discardTouchManager(cardNode: cardNode)
-                        } else if nodeName == "deal" { // Check if the node is the deal button
-                            dealButtonPressed = true
-                            dealCards()
                         } else if nodeName == "DUMBLE" { // Check if the node is the user dumble button
                             dumbleButtonTouchManager()
                         }
