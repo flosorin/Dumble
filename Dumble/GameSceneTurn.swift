@@ -52,6 +52,12 @@ extension GameScene {
                 }
             })
         }
+        // Display the user dumble button if needed
+        if (playerIndex == 0) && (players[0].getHandScore() <= 9) && (!isWaitingForRedealing) {
+            dumbleButton.isHidden = false
+        } else {
+            dumbleButton.isHidden = true
+        }
     }
     
     func getOtherPlayersNbCard() -> [Int] {

@@ -68,12 +68,6 @@ extension GameScene {
             // Update the hand score label
             playerHandScoreLabelNode.isHidden = false
             playerHandScoreLabelNode.text = "Hand: \(handScore)"
-            // Show or hide the dumble button
-            if handScore <= 9 && !isWaitingForRedealing {
-                dumbleButton.isHidden = false
-            } else {
-                dumbleButton.isHidden = true
-            }
         } else {
             playerHandScoreLabelNode.isHidden = true
             dumbleButton.isHidden = true
@@ -119,8 +113,10 @@ extension GameScene {
     }
     
     func dumbleButtonTouchManager() {
-        // Firstly, check if this is the user turn
+        // Firstly, check if this is the user turn (paranoid as the button is not supposed to be shown if not)
         if playerIndex == 0 {
+            // Hide button
+            dumbleButton.isHidden = true
             // Call generic method
             dumbleManagement()
         }
