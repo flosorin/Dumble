@@ -34,13 +34,13 @@ extension GameScene {
     func createDiscardNodes() {
         // Create the first card
         discardCardsNodes.append(createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: 0, y: 0)))
-        discardCardsNodes[0].position = CGPoint(x: discardCardsNodes[0].size.width, y: 3.5 * discardCardsNodes[0].size.height)
+        discardCardsNodes[0].position = CGPoint(x: discardCardsNodes[0].size.width * 0.75, y: 3.5 * discardCardsNodes[0].size.height)
         discardCardsNodes[0].name = "discard0"
         discardCardsList.updateValue(discardCardsNodes[0], forKey: "discard0")
         addChild(discardCardsNodes[0])
         // Create the others according to the first card position
         for index in 1...4 {
-            discardCardsNodes.append(createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: discardCardsNodes[index - 1].position.x + 1.25 * discardCardsNodes[0].position.x, y: discardCardsNodes[0].position.y)))
+            discardCardsNodes.append(createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: discardCardsNodes[index - 1].position.x + discardCardsNodes[0].frame.width * 1.25, y: discardCardsNodes[0].position.y)))
             discardCardsNodes[index].name = "discard\(index)"
             discardCardsList.updateValue(discardCardsNodes[index], forKey: "discard\(index)")
             addChild(discardCardsNodes[index])
@@ -55,7 +55,7 @@ extension GameScene {
         card.zRotation = angle
         card.zPosition = depthPosition
         // Resize it keeping aspect ratio
-        card.size = resizeWidth(oldSize: card.size, newWidth: frame.width / 7.5)
+        card.size = resizeWidth(oldSize: card.size, newWidth: frame.width / 6.5)
         return card
     }
     

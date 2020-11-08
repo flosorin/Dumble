@@ -106,7 +106,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func createPlayers() {
         players.append(PlayerUser())
-        players[0].name = "User"
+        players[0].name = "Player"
         for _ in 1...3 {
             players.append(PlayerIA())
         }
@@ -120,8 +120,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for (index, player) in players.enumerated() {
             playersNameLabelNodes.append(SKLabelNode(text: player.name))
             playersScoreLabelNodes.append(SKLabelNode(text: "0"))
-            playersNameLabelNodes[index].fontSize = 20
-            playersScoreLabelNodes[index].fontSize = 20
+            playersNameLabelNodes[index].fontSize = 22
+            playersScoreLabelNodes[index].fontSize = 22
             playersNameLabelNodes[index].fontColor = SKColor.white
             playersScoreLabelNodes[index].fontColor = SKColor.white
             playersNameLabelNodes[index].isHidden = true
@@ -131,14 +131,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         // Configure the specific position
         // Player user
-        playersNameLabelNodes[0].position = CGPoint(x: frame.width * 0.15, y: playerCardsNodes[0].size.height / 2)
-        playersScoreLabelNodes[0].position = CGPoint(x: frame.width * 0.3, y: playerCardsNodes[0].size.height / 2)
+        let labelNameRect = CGRect(x: 0.0, y: 0.0, width: playerCardsNodes[0].size.width, height: playerCardsNodes[0].size.height / 3)
+        adjustLabelFontSizeToFitRect(labelNode: playersNameLabelNodes[0], rect: labelNameRect)
+        playersNameLabelNodes[0].position = CGPoint(x: playerCardsNodes[0].position.x, y: playerCardsNodes[0].size.height / 2)
+        playersScoreLabelNodes[0].fontSize = playersNameLabelNodes[0].fontSize
+        playersScoreLabelNodes[0].position = CGPoint(x: (playerCardsNodes[1].position.x - (playerCardsNodes[0].size.width / 4)), y: playersNameLabelNodes[0].position.y)
         // IA #1
-        playersNameLabelNodes[1].position = CGPoint(x: frame.width * 0.1, y: frame.height * 0.8)
+        playersNameLabelNodes[1].position = CGPoint(x: (playersNameLabelNodes[1].frame.width / 2) + (playerCardsNodes[0].size.width / 4), y: frame.height * 0.8)
         // IA #2
-        playersNameLabelNodes[2].position = CGPoint(x: frame.width * 0.15, y: frame.maxY - playersNameLabelNodes[2].frame.height * 1.5)
+        playersNameLabelNodes[2].position = CGPoint(x: (playersNameLabelNodes[2].frame.width / 2) + (playerCardsNodes[0].size.width / 2), y: frame.maxY - playersNameLabelNodes[2].frame.height * 2)
         // IA #3
-        playersNameLabelNodes[3].position = CGPoint(x: frame.width * 0.9, y: frame.height * 0.8)
+        playersNameLabelNodes[3].position = CGPoint(x: frame.width - (playersNameLabelNodes[1].frame.width / 2) - (playerCardsNodes[0].size.width / 4), y: frame.height * 0.8)
         // All IA
         for nodeIndex in 1...playersScoreLabelNodes.count - 1 {
             playersScoreLabelNodes[nodeIndex].position = CGPoint(x: playersNameLabelNodes[nodeIndex].position.x, y: playersNameLabelNodes[nodeIndex].position.y - playersScoreLabelNodes[nodeIndex].frame.height * 1.5)

@@ -23,13 +23,13 @@ extension GameScene {
     func createPlayerHand() {
         // Create the first card
         playerCardsNodes.append(createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: 0, y: 0)))
-        playerCardsNodes[0].position = CGPoint(x: playerCardsNodes[0].size.width * 1.25, y: 1.5 * playerCardsNodes[0].size.height)
+        playerCardsNodes[0].position = CGPoint(x: playerCardsNodes[0].size.width * 0.75, y: 1.5 * playerCardsNodes[0].size.height)
         playerCardsNodes[0].name = "card0"
         playerCardsList.updateValue(playerCardsNodes[0], forKey: "card0")
         addChild(playerCardsNodes[0])
         // Create the others according to the first card position
         for index in 1...4 {
-            playerCardsNodes.append(createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: playerCardsNodes[index - 1].position.x + playerCardsNodes[0].position.x, y: playerCardsNodes[0].position.y)))
+            playerCardsNodes.append(createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: playerCardsNodes[index - 1].position.x + playerCardsNodes[0].size.width * 1.25, y: playerCardsNodes[0].position.y)))
             playerCardsNodes[index].name = "card\(index)"
             playerCardsList.updateValue(playerCardsNodes[index], forKey: "card\(index)")
             addChild(playerCardsNodes[index])
@@ -38,15 +38,31 @@ extension GameScene {
     
     func createPlayerHandScoreLabel() {
         playerHandScoreLabelNode = SKLabelNode(text: "Hand: 0")
-        playerHandScoreLabelNode.fontSize = 20
         playerHandScoreLabelNode.fontColor = SKColor.white
+        let labelRect = CGRect(x: 0.0, y: 0.0, width: playerCardsNodes[0].size.width * 1.25, height: playerCardsNodes[0].size.height / 3)
+        adjustLabelFontSizeToFitRect(labelNode: playerHandScoreLabelNode, rect: labelRect)
         playerHandScoreLabelNode.position = CGPoint(x: frame.midX, y: playerCardsNodes[0].size.height / 2)
         addChild(playerHandScoreLabelNode)
     }
     
     func createPlayerDumbleButton() {
-        dumbleButton = createButton(title: "DUMBLE", textSize: 20)
-        dumbleButton.position = CGPoint(x: frame.width - dumbleButton.frame.width * 1.25, y: playerCardsNodes[0].size.height / 2)
+        // Title
+        let buttonLabel = SKLabelNode(text: "DUMBLE")
+        buttonLabel.fontColor = SKColor.white
+        buttonLabel.fontName = "HelveticaNeue-Bold"
+        // Button
+        let buttonRect = CGRect(x: 0.0, y: 0.0, width: playerCardsNodes[0].size.width * 1.5, height: playerCardsNodes[0].size.height / 3)
+        adjustLabelFontSizeToFitRect(labelNode: buttonLabel, rect: buttonRect, offset: buttonRect.width * 0.1)
+        let buttonNode = SKShapeNode(rect: buttonRect, cornerRadius: 10)
+        buttonNode.position = CGPoint(x: position.x - buttonNode.frame.midX, y: position.y - buttonNode.frame.midY)
+        buttonNode.fillColor = UIColor.black
+        buttonNode.addChild(buttonLabel)
+        // Get a SKSpriteNode instead of a SKShapeNode
+        let node = SKNode()
+        node.addChild(buttonNode)
+        dumbleButton = SKSpriteNode(texture: view?.texture(from: node, crop: node.calculateAccumulatedFrame()))
+        dumbleButton.position = CGPoint(x: (frame.width - (dumbleButton.frame.width / 2) - (playerCardsNodes[0].size.width / 4)), y: (playerCardsNodes[0].size.height / 2) + (dumbleButton.frame.height / 3))
+        dumbleButton.name = "DUMBLE"
         addChild(dumbleButton)
     }
     

@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -19,14 +16,14 @@
                         <viewControllerLayoutGuide type="bottom" id="xb3-aO-Qok"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchScreen" translatesAutoresizingMaskIntoConstraints="NO" id="69q-wu-Hs2">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="©Florian Sorin 2018" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Ofa-Tb-0S7">
-                                <rect key="frame" x="74" y="626" width="227" height="21"/>
+                                <rect key="frame" x="115.66666666666669" y="836" width="183" height="26"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="21"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -35,13 +32,11 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="69q-wu-Hs2" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="8D4-AL-jjh"/>
+                            <constraint firstItem="Ofa-Tb-0S7" firstAttribute="bottom" secondItem="xb3-aO-Qok" secondAttribute="top" id="I2S-wC-guz"/>
                             <constraint firstItem="69q-wu-Hs2" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="Ix8-4z-0CT"/>
-                            <constraint firstItem="Ofa-Tb-0S7" firstAttribute="centerX" secondItem="69q-wu-Hs2" secondAttribute="centerX" id="Jdg-UD-Yb8"/>
-                            <constraint firstItem="69q-wu-Hs2" firstAttribute="bottom" secondItem="xb3-aO-Qok" secondAttribute="top" id="LVI-G6-xHD"/>
+                            <constraint firstItem="Ofa-Tb-0S7" firstAttribute="centerX" secondItem="69q-wu-Hs2" secondAttribute="centerX" id="QeJ-UQ-Gae"/>
+                            <constraint firstAttribute="bottom" secondItem="69q-wu-Hs2" secondAttribute="bottom" id="RbF-id-jc3"/>
                             <constraint firstAttribute="trailing" secondItem="69q-wu-Hs2" secondAttribute="trailing" id="UkG-x1-Zm0"/>
-                            <constraint firstItem="Ofa-Tb-0S7" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" constant="58" id="oqh-Gi-4Ku"/>
-                            <constraint firstAttribute="bottom" secondItem="Ofa-Tb-0S7" secondAttribute="bottom" constant="20" symbolic="YES" id="vya-8M-oMI"/>
-                            <constraint firstItem="Ofa-Tb-0S7" firstAttribute="top" secondItem="Llm-lL-Icb" secondAttribute="bottom" constant="606" id="yh6-kF-JyI"/>
                         </constraints>
                     </view>
                 </viewController>

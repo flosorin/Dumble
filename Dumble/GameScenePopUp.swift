@@ -15,7 +15,7 @@ extension GameScene {
     
     func createSettingsPopUp() -> SKShapeNode {
         let popUp = createPopUp(title: "Settings")
-        let restartButton = createButton(title: "Restart")
+        let restartButton = createPopUpButton(title: "Restart")
         popUp.addChild(restartButton)
         if let titlePositionY = popUp.childNode(withName: "popUpTitle")?.position.y {
             restartButton.position = CGPoint(x: (restartButton.parent?.frame.midX)!, y: titlePositionY - 1.5 * restartButton.frame.height)
@@ -34,7 +34,7 @@ extension GameScene {
         if let titlePositionY = popUp.childNode(withName: "popUpTitle")?.position.y {
             text.position = CGPoint(x: (text.parent?.frame.midX)!, y: titlePositionY - 1.5 * text.frame.height)
         }
-        let okButton = createButton(title: "OK", customWidth: frame.width * 0.3)
+        let okButton = createPopUpButton(title: "OK", customWidth: frame.width * 0.3)
         popUp.addChild(okButton)
         okButton.position = CGPoint(x: (okButton.parent?.frame.midX)!, y: text.position.y - okButton.frame.height)
         
@@ -73,7 +73,7 @@ extension GameScene {
         return popUpNode
     }
     
-    func createButton(title: String, textSize: CGFloat = 25, position: CGPoint = CGPoint(x: 0, y: 0), customWidth: CGFloat = 0.0) -> SKSpriteNode {
+    func createPopUpButton(title: String, textSize: CGFloat = 25, position: CGPoint = CGPoint(x: 0, y: 0), customWidth: CGFloat = 0.0) -> SKSpriteNode {
         // Title
         let buttonTitle = SKLabelNode(text: title)
         buttonTitle.fontSize = textSize

@@ -14,12 +14,10 @@ import GameplayKit
 extension GameScene {
     
     func createIAHands() {
-        // Create dummy card just to recover its dimensions
-        let card = createCardNode(cardTexture: backTexture, cardPosition: CGPoint(x: 0, y: 0))
         // Create hands based on card size
-        handsIA.append(createHandNode(angle: CGFloat(-Double.pi / 2), position: CGPoint(x: card.size.height / 3, y: frame.height * 5 / 8)))
-        handsIA.append(createHandNode(angle: CGFloat(Double.pi), position: CGPoint(x: frame.width / 2, y: frame.height - (card.size.height / 3))))
-        handsIA.append(createHandNode(angle: CGFloat(Double.pi / 2), position: CGPoint(x: frame.width - (card.size.height / 3), y: frame.height * 5 / 8)))
+        handsIA.append(createHandNode(angle: CGFloat(-Double.pi / 2), position: CGPoint(x: 0, y: frame.height * 5 / 8)))
+        handsIA.append(createHandNode(angle: CGFloat(Double.pi), position: CGPoint(x: frame.width / 2, y: frame.height)))
+        handsIA.append(createHandNode(angle: CGFloat(Double.pi / 2), position: CGPoint(x: frame.width, y: frame.height * 5 / 8)))
         
         for hand in handsIA {
             addChild(hand)
