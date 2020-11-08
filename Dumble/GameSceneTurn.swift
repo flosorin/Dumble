@@ -88,6 +88,9 @@ extension GameScene {
             for (index, player) in players.enumerated() {
                 if index != playerIndex {
                     player.updateScore() // All other players add their hand score to their score
+                    if index != 0 { // Display the score of losers, except for the user (always displayed as hand score)
+                        displayDumbleSaidLabel(hide: false, playerIndex: index, text: "")
+                    }
                 }
             }
         } else {
@@ -114,10 +117,11 @@ extension GameScene {
                 // Empty the discard
                 self.discard.removeAll()
                 self.nbDiscardCardsToShow = 0
-                // Re-hide the IA cards and the dumble said label
+                // Re-hide the IA cards and the dumble said labels
                 self.showIAHands = false
-                self.displayDumbleSaidLabel(hide: true, playerIndex: self.playerIndex)
-                self.displayDumbleSaidLabel(hide: true, playerIndex: counterPlayerIndex)
+                for (index, _) in self.players.enumerated() {
+                    self.displayDumbleSaidLabel(hide: true, playerIndex: index)
+                }
                 // Re-deal the cards if the game is not over
                 if self.isDealingComplete {
                     self.dealCards()
